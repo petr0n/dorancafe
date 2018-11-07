@@ -5,22 +5,29 @@
 	1. get data from rentcafe
 	2. save data to file
 	3. read file and loop through nodes to insert data into db
-
-
-
-
+	
 */
 
 
+add_action( 'wp_ajax_dc_get_unit_data', 'dc_get_unit_data' );
 
-add_action( 'wp_ajax_dc_get_floorplans', 'dc_get_floorplans' );
+function dc_get_unit_data() {
 
-function dc_get_floorplans() {
+	if ( $_POST['api_url_floorplan'] ) {
+		$api_url_floorplan = $_POST['api_url_floorplan'];
+		$request_floorplan = wp_remote_get( $api_url_floorplan );
+	} else {
+		echo 'floorplan missing!';
+		return false;
+	}
+	if ( $_POST['api_url_aptavail'] ) {
+		$api_url_aptavail = $_POST['api_url_aptavail'];
+		$request_aptavail = wp_remote_get( $api_url_aptavail );
+	} else {
+		echo 'aptavail missing!';
+		return false;
+	}
 
-	$api_url = $_POST['api_url_floorplan'];
-
-	$request_floorplan = wp_remote_get( $api_url_floorplan );
-	$request_aptavail = wp_remote_get( $api_url_aptavail );
 
 	if( is_wp_error( $request_floorplan ) || is_wp_error( $request_aptavail )) {
 		echo 'Uh Oh! wp_remote_get error';
@@ -31,13 +38,16 @@ function dc_get_floorplans() {
 	$body_aptavail = wp_remote_retrieve_body( $request_aptavail );
 	// $data_floorplan = json_decode( $body );
 
-
 	dc_save_file( 'floorplan', $body_floorplan );
 	dc_save_file( 'aptavail', $body_aptavail );
 	dc_create_floorplan_table();
 	dc_insert_floorplan_data();
-	dc_get_unique_floorplans();
+
+	dc_create_aptavail_table();
+	dc_insert_aptavail_data();
+	// dc_get_units();
 	die();
+
 	// echo $body;
 	// echo $body;
 	//var_dump($data);
@@ -57,9 +67,9 @@ function dc_get_floorplans() {
 function dc_save_file( $filename, $data_to_save ) {
 	//Save the JSON string to a text file.
 	$today = date('YmdHis');
-	$filepath_to_save = DORANCAFE_PATH . 'temp/' . $filename . '/' . $filename . '_' . $today . '.txt'
+	$filepath_to_save = DORANCAFE_PATH . 'rentcafe_data/' . $filename . '/' . $filename . '_' . $today . '.txt';
 	file_put_contents( $filepath_to_save, $data_to_save);
-	echo 'file saved: dc_' . $filename . '_' . $today . '.txt';
+	echo 'file saved: dc_' . $filename . '_' . $today . '.txt<br>';
 }
 
 
@@ -94,20 +104,21 @@ function dc_create_floorplan_table() {
 		PRIMARY KEY (FloorplanTblId)
 	) $charset_collate;";
 	dbDelta( $sql );
-	echo '<br>table created';
+	echo '<br>' . $db->dc_floorplans . ' table created';
 }
 
 
 function dc_insert_floorplan_data() {
-	$files = scandir( DORANCAFE_PATH . 'temp', SCANDIR_SORT_DESCENDING );
+	$path_to_file = DORANCAFE_PATH . 'rentcafe_data/floorplan/';
+	$files = scandir( $path_to_file, SCANDIR_SORT_DESCENDING );
 	$newest_file = $files[0];
-	$floorplans_json = file_get_contents( DORANCAFE_PATH . 'temp/' . $newest_file );
+	$floorplans_json = file_get_contents( $path_to_file . $newest_file );
 	$floorplans = json_decode( $floorplans_json );
 	if ( $floorplans ) { // file not blank
 		global $wpdb;
-		// echo '<ul>';
+		$db = dc_get_db();
+		$delete = $wpdb->query("TRUNCATE TABLE $db->dc_floorplans"); //delete data first
 		foreach( $floorplans as $floorplan ) {
-			$db = dc_get_db();
 			$wpdb->insert($db->dc_floorplans, array(
 				"PropertyId" 			=> $floorplan->PropertyId,
 				"FloorplanId"  			=> $floorplan->FloorplanId,
@@ -136,7 +147,7 @@ function dc_insert_floorplan_data() {
 		}
 		//echo '</ul>';
 	}
-	echo '<br>floorplans saved<br>';
+	echo '<br>floorplans data inserted<br>';
 }
 
 
@@ -148,7 +159,7 @@ function dc_create_aptavail_table() {
 	//* Create the table
 	$db = dc_get_db();
 	$sql = "CREATE TABLE IF NOT EXISTS `$db->dc_aptavail` (
-		AptAvailTblId INTEGER NOT NULL AUTO_INCREMENT
+		AptAvailTblId INTEGER NOT NULL AUTO_INCREMENT,
 		PropertyId INTEGER NOT NULL,
 		VoyagerPropertyId INTEGER NOT NULL,
 		VoyagerPropertyCode INTEGER NOT NULL,
@@ -170,39 +181,39 @@ function dc_create_aptavail_table() {
 		PRIMARY KEY (AptAvailTblId)
 	) $charset_collate;";
 	dbDelta( $sql );
-	echo '<br>table created';
+	echo '<br>' . $db->dc_aptavail . ' table created';
 }
 
 
 function dc_insert_aptavail_data() {
-	$files = scandir( DORANCAFE_PATH . 'temp', SCANDIR_SORT_DESCENDING );
+	$path_to_file = DORANCAFE_PATH . 'rentcafe_data/aptavail/';
+	$files = scandir( $path_to_file, SCANDIR_SORT_DESCENDING );
 	$newest_file = $files[0];
-	$json_aptavail = file_get_contents( DORANCAFE_PATH . 'temp/' . $newest_file );
+	$json_aptavail = file_get_contents( $path_to_file . $newest_file );
 	$aptavails = json_decode( $json_aptavail );
 	if ( $aptavails ) { // file not blank
 		global $wpdb;
-		// echo '<ul>';
+		$db = dc_get_db();
+		$delete = $wpdb->query("TRUNCATE TABLE $db->dc_aptavail"); //delete data first
 		foreach( $aptavails as $aptavail ) {
-			$db = dc_get_db();
 			$wpdb->insert($db->dc_aptavail, array(
-				"PropertyId" 			=> $floorplan->PropertyId,
-				"FloorplanId"  			=> $floorplan->FloorplanId,
-				"FloorplanName" 		=> $floorplan->FloorplanName,
-				"Beds" 					=> $floorplan->Beds,
-				"Baths"					=> $floorplan->Baths,
-				"MinimumSQFT" 			=> $floorplan->MinimumSQFT,
-				"MaximumSQFT"			=> $floorplan->MaximumSQFT,
-				"MinimumRent" 			=> $floorplan->MinimumRent,
-				"MaximumRent"			=> $floorplan->MaximumRent,
-				"MinimumDeposit"		=> $floorplan->MinimumDeposit,
-				"MaximumDeposit"		=> $floorplan->MaximumDeposit,
-				"AvailableUnitsCount"	=> $floorplan->AvailableUnitsCount,
-				"AvailabilityURL"		=> $floorplan->AvailabilityURL,
-				"FloorplanImageURL"		=> $floorplan->FloorplanImageURL,
-				"FloorplanImageName"	=> $floorplan->FloorplanImageName,
-				"PropertyShowsSpecials"	=> $floorplan->PropertyShowsSpecials,
-				"FloorplanHasSpecials"	=> $floorplan->FloorplanHasSpecials,
-				"UnitTypeMapping" 		=> $floorplan->UnitTypeMapping
+				"PropertyId" 			=> $aptavail->PropertyId,
+				"VoyagerPropertyId" 	=> $aptavail->VoyagerPropertyId,
+				"VoyagerPropertyCode" 	=> $aptavail->VoyagerPropertyCode,
+				"FloorplanId"  			=> $aptavail->FloorplanId,
+				"FloorplanName"  		=> $aptavail->FloorplanName,
+				"ApartmentId"			=> $aptavail->ApartmentId,
+				"ApartmentName" 		=> $aptavail->ApartmentName,
+				"Beds" 					=> $aptavail->Beds,
+				"Baths"					=> $aptavail->Baths,
+				"SQFT"					=> $aptavail->SQFT,
+				"MinimumRent" 			=> $aptavail->MinimumRent,
+				"MaximumRent"			=> $aptavail->MaximumRent,
+				"Deposit"				=> $aptavail->Deposit,
+				"ApplyOnlineURL"		=> $aptavail->ApplyOnlineURL,
+				"Specials"				=> $aptavail->Specials,
+				"Amenities"				=> $aptavail->Amenities,
+				"AvailableDate"			=> $aptavail->AvailableDate
 			));
 			// echo '<li>';
 			// 	echo 'tbl: ' . $db->dc_floorplans;
@@ -212,7 +223,7 @@ function dc_insert_aptavail_data() {
 		}
 		//echo '</ul>';
 	}
-	echo '<br>floorplans saved<br>';
+	echo '<br>aptavail data inserted<br>';
 }
 
 
@@ -220,30 +231,76 @@ function dc_insert_aptavail_data() {
 // next step is to loop through each unique floor plan and insert each unique unit into dc_units
 
 
-
-
-function dc_get_unique_floorplans() {
+function dc_get_units() {
 	// loop through grouped floorplans
 	$db = dc_get_db();
 	global $wpdb;
-	$qry = "
+	$unit_qry = "
 		SELECT * 
-		FROM $db->dc_floorplans 
-		GROUP BY FloorplanId
-		ORDER BY FloorplanId
+		FROM $db->dc_aptavail
+		ORDER BY ApartmentName
 	"; 
 
-	$grouped_floorplans = $wpdb->get_results( $qry, OBJECT );
-	// var_dump( $grouped_floorplans );
-	if ( $grouped_floorplans ) { // file not blank
-		global $wpdb;
-		// echo '<ul>';
-		foreach( $grouped_floorplans as $floorplan ) {
-			echo '<br>name: ' . $floorplan->FloorplanName . '<hr>';
-			// 
-		}
+	$units = $wpdb->get_results( $unit_qry, OBJECT );
+	// var_dump( $units );
+	if ( $units ) { ?>
+		<table>
+			<thead>
+				<tr>
+				<th>Unit#</th>
+				<th>Beds</th>
+				<th>Baths</th>
+				<th>SQFT</th>
+				<th>MaximumRent</th>
+				<th>Amenities</th>
+				<th>AvailableDate</th>
+				</tr>
+			</thead>
+			<tbody><?php 
+			foreach( $units as $unit ) :
+				echo '<tr>';
+				echo '<td>' . $unit->ApartmentName . '</td>';
+				echo '<td>' . $unit->Beds . '</td>';
+				echo '<td>' . $unit->Baths . '</td>';
+				echo '<td>' . $unit->SQFT . '</td>';
+				echo '<td>' . $unit->MaximumRent . '</td>';
+				echo '<td>' . $unit->Amenities . '</td>';
+				echo '<td>' . $unit->AvailableDate . '</td>';
+				echo '</tr>';
+			endforeach;
+		echo '</tbody></table>';
 	}
 }
+
+
+
+// function dc_get_unique_floorplans() {
+// 	// loop through grouped floorplans
+// 	$db = dc_get_db();
+// 	global $wpdb;
+// 	$floorplan_qry = "
+// 		SELECT * 
+// 		FROM $db->dc_floorplans 
+// 		GROUP BY FloorplanId
+// 		ORDER BY FloorplanId
+// 	"; 
+
+// 	$grouped_floorplans = $wpdb->get_results( $qry, OBJECT );
+// 	// var_dump( $grouped_floorplans );
+// 	if ( $grouped_floorplans ) { // file not blank
+// 		global $wpdb;
+// 		// echo '<ul>';
+// 		foreach( $grouped_floorplans as $floorplan ) {
+// 			echo '<br>name: ' . $floorplan->FloorplanName . '<hr>';
+// 			// get individual units from aptavail 
+// 			$aptavail_qry = "
+// 				SELECT *
+// 				FROM $dc->dc_aptavail
+// 				WHERE FloorplanName = '$floorplan->FloorplanName'
+// 			";
+// 		}
+// 	}
+// }
 
 /*
 	floorplan request

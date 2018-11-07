@@ -3,7 +3,7 @@
  */
 
 var $ 			= require('jquery');
-var $the_form 	= $('#api_floorplan_get');
+var $the_form 	= $('#api_get_units');
 
 /**
  * Initialize api_services
@@ -15,12 +15,15 @@ function init() {
 	btn = $the_form.find('button');
 	btn.on('click', function(e){
 		e.preventDefault();
-		var api_url = $the_form.find('input').val();
-		if ( api_url == '' ) {
-			api_services_error( $the_form, 'URL required');
+		var url_floorplan = $the_form.find('input#api_url_floorplan').val();
+		var url_aptavail = $the_form.find('input#api_url_aptavail').val();
+		if ( url_floorplan == '' ) {
+			api_services_error( $the_form, 'Floorplan URL required');
+		} else if ( url_aptavail == '' ) {
+			api_services_error( $the_form, 'AptAvail URL required');
 		} else {
 
-			console.log('value ' + $the_form.find('input').val() );
+			//console.log( 'value ' + $the_form.find('input#api_url_aptavail').val() );
 			var note = $('#notifications');
 			note.empty();
 
@@ -28,12 +31,12 @@ function init() {
 				url : urls.ajax,
 				type : 'post',
 				data : {
-					action : 'dc_get_floorplans',
-					api_url_floorplan: api_url_floorplan,
-					api_url_aptavail: api_url_floorplan
+					action : 'dc_get_unit_data',
+					api_url_floorplan: url_floorplan,
+					api_url_aptavail: url_aptavail
 				},
 				success : function( response ) {
-					note.css('background-color', 'green').fadeIn('fast', function(){
+					note.fadeIn('slow', function(){
 						$(this).append(response);
 					});
 				},
