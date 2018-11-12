@@ -47,20 +47,6 @@ function dc_get_unit_data() {
 	dc_insert_aptavail_data();
 	// dc_get_units();
 	die();
-
-	// echo $body;
-	// echo $body;
-	//var_dump($data);
-	// if( ! empty( $data ) ) {
-	// 	echo '<ul>';
-	// 	foreach( $data as $unit ) {
-	// 		echo '<li>';
-	// 			echo 'propid: ' . $unit->PropertyId; 
-	// 			echo '<br>name: ' . $unit->FloorplanName . '<hr>';
-	// 		echo '</li>';
-	// 	}
-	// 	echo '</ul>';
-	// }
 }
 
 

@@ -63,15 +63,21 @@ class DoranCafe
 		// create admin menu item
 		add_action( 'admin_menu', array( $this, 'dc_settings_page' ) );
 		add_action( 'admin_init', array( $this, 'dc_add_acf_variables' ) );
+		
 		// include ACF stuff
 		add_filter( 'acf/settings/path', array( $this, 'dc_update_acf_settings_path' ) );
 		add_filter( 'acf/settings/dir', array( $this, 'dc_update_acf_settings_dir' ) );
 		include_once( DORANCAFE_PATH . 'vendor/advanced-custom-fields-pro/acf.php' );
 
-		
+		// create admin page
 		add_action( 'admin_init', array( $this, 'dc_setup_sections' ) );
-		//$this->dc_setup_options();
+		
+		// setup cron job
+		add_action( 'admin_init', array( $this, 'dc_plugin_schedule_cron' ) );
+		add_filter( 'cron_schedules', array( $this, 'dc_plugin_cron_add_intervals') );
 
+		// callback for schedule option "job_name" save
+		add_action( 'acf/save_post', array( $this, 'dc_schedule_options_after_save' ), 1 );
 		
 		// Includes
 		$includes = array_merge(
@@ -135,10 +141,25 @@ class DoranCafe
 						'post_id' => 'options',
 						'new_post' => false,
 						'field_groups' => array( '12' ),
-						'return' => admin_url('admin.php?page=dorancafe'),
+						'return' => admin_url('admin.php?page=dorancafe&form=base'),
 						'submit_value' => 'Update',
 					);
 					acf_form( $first_options ); ?>
+					<hr>
+					<?php 
+					/*
+					$schedule_options = array(
+						'id' => 'dc_schedule_form',
+						'post_id' => 'options',
+						'new_post' => false,
+						'field_groups' => array( '23' ),
+						'return' => admin_url('admin.php?page=dorancafe&form=schedule'),
+						'submit_value' => 'Update',
+						'instruction_placement' => 'field',
+					);
+					acf_form( $schedule_options );  
+					*/
+					?>
 				</div>
 			</div>
 		</div> <?php 
@@ -168,23 +189,67 @@ class DoranCafe
 		switch( $arguments['id'] ){
 			case 'check_data':
 				include_once( DORANCAFE_PATH . 'templates/dc_get_data.php' );
+				echo '<br><hr><br>';
 				break;
 			case 'view_data':
 				include_once( DORANCAFE_PATH . 'templates/dc_view_data.php' );
+				echo '<br><hr><br>';
 				break;
 			case 'schedule':
 				include_once( DORANCAFE_PATH . 'templates/dc_schedule.php' );
+				echo '<br><hr><br>';
 				break;
 			case 'settings':
 				$this->dc_plugin_setup();
+
 				break;
 		}
 	}
 
-
 	public function dc_add_acf_variables() {
 		acf_form_head();
 	}
+
+	public function dc_plugin_schedule_cron() {
+		// dc_create_scheduled_jobs_table();
+		$this->dc_log_me( 'dc_plugin_schedule_cron run' );
+		if ( !wp_next_scheduled( 'dc_scheduled_jobs' ) )
+			wp_schedule_event(time(), 'dc_customTime', 'dc_scheduled_jobs');
+	}
+	
+	public function dc_plugin_cron_add_intervals( $schedules ) {
+		$schedules['dc_customTime'] = array(
+			'interval' => 60,
+			'display' => __('Every 60sec')
+		);
+		return $schedules;
+	}
+
+	public function dc_log_me( $contents ){
+		$file = DORANCAFE_PATH . 'logs/log.txt';
+		$right_now = (new DateTime())->format('Ymd H:i:s');
+		$new_contents =  $right_now . ' - ' . $contents . PHP_EOL;
+		file_put_contents($file, $new_contents, FILE_APPEND);
+	}
+
+
+	public function dc_schedule_options_after_save( $post_id ) {
+		$jobname = get_field('job_name', $post_id);
+		$old_jobname = $_POST['acf']['field_5be1fcd41f1ec'];
+		$jobtime = get_field('start_time', $post_id);
+		$old_jobtime = $_POST['acf']['field_5be1fd661f1ed'];
+		$jobemails = get_field('email_notifications_to');
+		$old_jobemails = $_POST['acf']['field_5be1fdac1f1ee'];
+
+		if ( $jobname != $old_jobname || 
+			 $jobtime != $old_jobtime || 
+			 $jobemails != $old_jobemails ) {
+			$this->dc_log_me( 'name: ' . $jobname . ' old: ' . $old_jobname);
+			// dc_add_cron_job( $jobname, $jobtime, $jobemails );
+			dc_delete_schedule_job();
+		}
+	}
+	
 }
 /*
  * Starts our plugin class, easy!

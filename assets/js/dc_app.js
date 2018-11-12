@@ -7,12 +7,13 @@ require('consolelog');
 
 var $               	= require('jquery');
 var api_services        = require('./dc_api_services.js');
-// var nav		        = require('./nav.js');
+var schedule_services 	= require('./dc_schedule_services.js');
+
 
 /**
  * Initialize the app on DOM ready
  */
 $(function() {
 	api_services.init();
-	// nav.init();
+	schedule_services.init();
 });
