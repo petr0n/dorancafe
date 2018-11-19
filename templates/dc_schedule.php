@@ -28,7 +28,8 @@
 		<div class="col-md-12">
 			<h3>Existing jobs</h3>
 			<?php 
-			dc_get_scheduled_job();
+			$schedule_services = new DoranCafe_Schedule_Services();
+			$schedule_services->dc_get_scheduled_job();
 			 ?>
 		</div>
 	</div>

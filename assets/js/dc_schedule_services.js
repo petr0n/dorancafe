@@ -23,12 +23,12 @@ function init() {
 				action : 'dc_delete_schedule_job'
 			},
 			success : function( response ) {
-				$schedule_form.append(response);
+				$schedule_form.append('success: ' + response);
 			},
 			error : function( data, status ) {
 				console.log('data.responseText: ' & data.responseText);
 				console.log('status: ' & status);
-				$schedule_form.append(data.responseText);
+				$schedule_form.append('error: ' + data.responseText);
 			}
 		});
 	})

@@ -4,13 +4,10 @@ var path    = require('path');
 var paths   = require('../config').paths;
 
 gulp.task('watch', ['js'], function() {
-	gulp.watch([
-		paths.styles + '/**/*.scss'
-		// ,
-		// '!' + paths.styles + '/admin/**'
-	], ['styles']);
-	// Watch editor.less
-	// gulp.watch(paths.styles + '/admin/editor.scss', ['editorStyles']);
+	gulp.watch([paths.styles + '/**/*.scss'], ['styles']);
+	
+	// Watch public styles
+	gulp.watch(paths.public_styles + '/**/*.scss', ['publicStyles']);
 
 	// // Watch admin styles
 	// gulp.watch(paths.styles + '/admin/admin.scss', ['adminStyles']);

@@ -19,7 +19,8 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12" id="data-grid"><?php 
-			dc_get_units(); ?>					
+			$api_services = new DoranCafe_API_Services();
+			$api_services->dc_get_units(); ?>					
 		</div>
 	</div>
 </div>

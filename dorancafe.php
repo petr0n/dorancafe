@@ -30,6 +30,21 @@ plugin process flow
 
  */
  
+
+
+ // If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+
+/**
+ * Currently plugin version.
+ * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Rename this for your plugin and update it as you release new versions.
+ */
+define( 'DORANCAFE_PLUGIN', '1.0.0-alpha' );
+
 /*
  * Plugin constants
  */
@@ -37,6 +52,80 @@ if(!defined('DORANCAFE_URL'))
 	define('DORANCAFE_URL', plugin_dir_url( __FILE__ ));
 if(!defined('DORANCAFE_PATH'))
 	define('DORANCAFE_PATH', plugin_dir_path( __FILE__ ));
+
+
+
+/**
+ * The code that runs during plugin activation.
+ * This action is documented in includes/class-dorancafe-activator.php
+ */
+function activate_dorancafe() {
+	require_once DORANCAFE_PATH . 'includes/dc_class_activator.php';
+	DoranCafe_Activator::activate();
+}
+
+/**
+ * The code that runs during plugin deactivation.
+ * This action is documented in includes/class-dorancafe-deactivator.php
+ */
+function deactivate_dorancafe() {
+	require_once DORANCAFE_PATH . 'includes/dc_class_deactivator.php';
+	DoranCafe_Deactivator::deactivate();
+}
+
+register_activation_hook( DORANCAFE_PATH, 'activate_dorancafe' );
+register_deactivation_hook( DORANCAFE_PATH, 'deactivate_dorancafe' );
+
+
+
+
+/**
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
+ */
+require DORANCAFE_PATH . 'includes/dc_class_dorancafe.php';
+
+
+
+/**
+ * Return global wpdb aready setup with custom tables 
+ */
+function dc_get_db( wpdb $wpdb = NULL ) {
+	static $db;
+	if ( is_null($db) || ! is_null( $wpdb ) ) {
+		$db = is_null($wpdb) ? $GLOBALS['wpdb'] : $wpdb;
+	}
+	return $db;
+}
+
+/**
+ * Setup database saving $wpdb custom table names inside wpdb object
+ * to use the global db
+ * $db = dc_getDb();
+ * $query = $db->query( "SELECT * FROM $db->dc_floorplans" );
+ */
+function dc_set_db() {
+	global $wpdb;
+	/* define custom table names */
+	$my_tables = array(
+		'dc_floorplans', 'dc_aptavail', 'dc_scheduled_jobs'
+	);
+	foreach ( $my_tables as $table ) {
+		$wpdb->$table = $wpdb->prefix . $table;
+	}
+	dc_get_db( $wpdb );
+}
+add_action( 'plugins_loaded', 'dc_set_db' );
+
+
+
+
+function dc_log_me( $contents ){
+	$file = DORANCAFE_PATH . 'logs/log.txt';
+	$right_now = (new DateTime())->format('Ymd H:i:s');
+	$new_contents =  $right_now . ' - ' . $contents . PHP_EOL;
+	file_put_contents($file, $new_contents, FILE_APPEND);
+}
 
 
 
@@ -49,7 +138,7 @@ if(!defined('DORANCAFE_PATH'))
  * Class DoranCafe
  *
  * This class creates the option page and add the web app script
- */
+
 class DoranCafe
 {
  
@@ -57,7 +146,7 @@ class DoranCafe
 	 * DoranCafe constructor.
 	 *
 	 * The main plugin actions registered for WordPress
-	 */
+	
 	public function __construct()
 	{
 		// create admin menu item
@@ -144,10 +233,8 @@ class DoranCafe
 						'return' => admin_url('admin.php?page=dorancafe&form=base'),
 						'submit_value' => 'Update',
 					);
-					acf_form( $first_options ); ?>
-					<hr>
-					<?php 
-					/*
+					acf_form( $first_options );
+					echo '<hr>';					
 					$schedule_options = array(
 						'id' => 'dc_schedule_form',
 						'post_id' => 'options',
@@ -157,9 +244,7 @@ class DoranCafe
 						'submit_value' => 'Update',
 						'instruction_placement' => 'field',
 					);
-					acf_form( $schedule_options );  
-					*/
-					?>
+					acf_form( $schedule_options );  ?>
 				</div>
 			</div>
 		</div> <?php 
@@ -200,9 +285,9 @@ class DoranCafe
 				echo '<br><hr><br>';
 				break;
 			case 'settings':
-				$this->dc_plugin_setup();
-
+				include_once( DORANCAFE_PATH . 'templates/dc_settings.php' );
 				break;
+				// $this->dc_plugin_setup();
 		}
 	}
 
@@ -212,9 +297,9 @@ class DoranCafe
 
 	public function dc_plugin_schedule_cron() {
 		// dc_create_scheduled_jobs_table();
-		$this->dc_log_me( 'dc_plugin_schedule_cron run' );
-		if ( !wp_next_scheduled( 'dc_scheduled_jobs' ) )
-			wp_schedule_event(time(), 'dc_customTime', 'dc_scheduled_jobs');
+		// $this->dc_log_me( 'dc_plugin_schedule_cron run' );
+		// if ( !wp_next_scheduled( 'dc_scheduled_jobs' ) )
+		// 	wp_schedule_event(time(), 'dc_customTime', 'dc_scheduled_jobs');
 	}
 	
 	public function dc_plugin_cron_add_intervals( $schedules ) {
@@ -253,46 +338,12 @@ class DoranCafe
 }
 /*
  * Starts our plugin class, easy!
- */
+ 
 new DoranCafe();
 
 
 
-/**
- * Return global wpdb aready setup with custom tables 
  */
-function dc_get_db( wpdb $wpdb = NULL ) {
-	static $db;
-	if ( is_null($db) || ! is_null( $wpdb ) ) {
-		$db = is_null($wpdb) ? $GLOBALS['wpdb'] : $wpdb;
-	}
-	return $db;
-}
-
-/**
- * Setup database saving $wpdb custom table names inside wpdb object
- * to use the global db
- * $db = dc_getDb();
- * $query = $db->query( "SELECT * FROM $db->dc_floorplans" );
- */
-function dc_set_db() {
-	global $wpdb;
-	/* define custom table names */
-	$my_tables = array(
-		'dc_floorplans', 'dc_aptavail', 'dc_scheduled_jobs'
-	);
-	foreach ( $my_tables as $table ) {
-		$wpdb->$table = $wpdb->prefix . $table;
-	}
-	dc_get_db( $wpdb );
-}
-add_action( 'plugins_loaded', 'dc_set_db' );
-
-
-
-
-
-
 
 
 // not in use for now

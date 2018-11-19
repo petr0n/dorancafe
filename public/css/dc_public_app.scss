@@ -1,0 +1,27 @@
+/* =================================================================================
+App
+================================================================================= */
+
+/**
+ * Vendor
+ */
+
+//@import 'bootstrap-grid/grid.scss'; // Includes grid boostrap styles
+// @import "vendor/bootstrap/scss/variables.scss";
+// @import "vendor/fontawesome/font-awesome.scss";
+// @import (reference) "vendor/bootstrap/less/mixins.less";
+
+/**
+ * Plugin dependencies
+ */
+// @import "variables";
+// @import "normalize.scss";
+// @import "fonts.scss";
+// @import "global.scss";
+// @import "utilities.scss";
+
+/**
+ * Plugin modules
+ */
+
+@import 'dc_public_main.scss';
