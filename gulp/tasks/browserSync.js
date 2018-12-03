@@ -5,11 +5,13 @@ var paths       = require('../config').paths;
 
 gulp.task('browserSync', ['watch'], function() {
   browserSync({
-    proxy: domain,
-    files: [
-      paths.dist + '/**',
-      // Exclude Map files
-      '!' + paths.dist + '/**.map'
-    ]
+	proxy: domain,
+	browser: 'firefox',
+	files: [
+	  paths.dist_admin + '/**',
+	  paths.dist_public + '/**',
+	  // Exclude Map files
+	  // '!' + paths.dist + '/**.map'
+	]
   });
 });

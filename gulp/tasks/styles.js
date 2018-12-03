@@ -11,7 +11,7 @@ var paths        = require('../config').paths;
 
 
 gulp.task('styles', function() {
-  return gulp.src(paths.styles + '/dc_app.scss')
+  return gulp.src(paths.styles_admin + '/dc_app.scss')
     .pipe(plumber({
       errorHandler: handleErrors
     }))
@@ -19,7 +19,7 @@ gulp.task('styles', function() {
     .pipe(autoprefixer())
     // .pipe(minifycss({ processImport: false }))
     // .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest(paths.dist + '/'))
+    .pipe(gulp.dest(paths.dist_admin + '/'))
     .pipe(browserSync.reload({
       stream: true
     }));

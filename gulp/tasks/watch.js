@@ -3,11 +3,11 @@ var gulp    = require('gulp');
 var path    = require('path');
 var paths   = require('../config').paths;
 
-gulp.task('watch', ['js'], function() {
-	gulp.watch([paths.styles + '/**/*.scss'], ['styles']);
+gulp.task('watch', ['js', 'js_public'], function() {
+	gulp.watch(paths.styles_admin + '/**/*.scss', ['styles']);
 	
 	// Watch public styles
-	gulp.watch(paths.public_styles + '/**/*.scss', ['publicStyles']);
+	gulp.watch(paths.styles_public + '/**/*.scss', ['publicStyles']);
 
 	// // Watch admin styles
 	// gulp.watch(paths.styles + '/admin/admin.scss', ['adminStyles']);
@@ -15,13 +15,6 @@ gulp.task('watch', ['js'], function() {
 	// // Watch admin scripts
 	// gulp.watch(paths.scripts + '/admin/admin.js', ['adminScripts']);
 });
-// gulp.task('watch', ['watchify'], function() {
-// 	// Watch theme .scss files
-// 	gulp.watch([
-// 		paths.styles + '/**/*.less',
-// 		'!' + paths.styles + '/admin/**'
-// 	], ['styles']);
-
 
 // 	// // Watch images
 // 	// gulp.watch(paths.images + '/**', ['images']);

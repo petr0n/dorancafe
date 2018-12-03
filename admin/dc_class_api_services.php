@@ -8,6 +8,8 @@
 	
 */
 
+
+
 class DoranCafe_API_Services
 {
 	/**
@@ -36,26 +38,36 @@ class DoranCafe_API_Services
 			echo 'aptavail missing!';
 			return false;
 		}
+		// $_POST['api_url_aptavail'] = 'https://api.rentcafe.com/rentcafeapi.aspx?requestType=apartmentAvailability&companyCode=c00000075513&propertyid=846708&sortOrder=apartmentName';
+		// if ( $_POST['api_url_aptavail'] ) {
+		// 	$api_url_aptavail = $_POST['api_url_aptavail'];
+		// 	$request_aptavail = wp_remote_get( $api_url_aptavail );
+		// } else {
+		// 	echo 'aptavail missing!';
+		// 	return false;
+		// }
 
 
-		if( is_wp_error( $request_floorplan ) || is_wp_error( $request_aptavail )) {
+		// if( is_wp_error( $request_floorplan ) || is_wp_error( $request_aptavail )) {
+		if( is_wp_error( $request_aptavail )) {
 			echo 'Uh Oh! wp_remote_get error';
 			return false; // Bail early
 		}
 		
-		$body_floorplan = wp_remote_retrieve_body( $request_floorplan );
+		// get remote data
+		// $body_floorplan = wp_remote_retrieve_body( $request_floorplan );
 		$body_aptavail = wp_remote_retrieve_body( $request_aptavail );
 		// $data_floorplan = json_decode( $body );
 
-		dc_save_file( 'floorplan', $body_floorplan );
-		dc_save_file( 'aptavail', $body_aptavail );
-		//dc_create_floorplan_table();
-		dc_insert_floorplan_data();
-
-		//dc_create_aptavail_table();
-		dc_insert_aptavail_data();
+		// save data to local file
+		// $this->dc_save_file( 'floorplan', $body_floorplan );
+		$this->dc_save_file( 'aptavail', $body_aptavail );
+		
+		// add new data to db
+		// $this->dc_insert_floorplan_data();
+		$this->dc_insert_aptavail_data();
 		// dc_get_units();
-		die();
+		// die();
 	}
 
 
@@ -78,10 +90,10 @@ class DoranCafe_API_Services
 		$floorplans = json_decode( $floorplans_json );
 		if ( $floorplans ) { // file not blank
 			global $wpdb;
-			$db = dc_get_db();
-			$delete = $wpdb->query("TRUNCATE TABLE $db->dc_floorplans"); //delete data first
+			$tbl_name = $wpdb->prefix . 'dc_floorplans';
+			$delete = $wpdb->query('TRUNCATE TABLE ' . $tbl_name); //delete data first
 			foreach( $floorplans as $floorplan ) {
-				$wpdb->insert($db->dc_floorplans, array(
+				$wpdb->insert($tbl_name, array(
 					"PropertyId" 			=> $floorplan->PropertyId,
 					"FloorplanId"  			=> $floorplan->FloorplanId,
 					"FloorplanName" 		=> $floorplan->FloorplanName,
@@ -122,10 +134,10 @@ class DoranCafe_API_Services
 		$aptavails = json_decode( $json_aptavail );
 		if ( $aptavails ) { // file not blank
 			global $wpdb;
-			$db = dc_get_db();
-			$delete = $wpdb->query("TRUNCATE TABLE $db->dc_aptavail"); //delete data first
+			$tbl_name = $wpdb->prefix . 'dc_aptavail';
+			$delete = $wpdb->query('TRUNCATE TABLE ' . $tbl_name); //delete data first
 			foreach( $aptavails as $aptavail ) {
-				$wpdb->insert($db->dc_aptavail, array(
+				$wpdb->insert($tbl_name, array(
 					"PropertyId" 			=> $aptavail->PropertyId,
 					"VoyagerPropertyId" 	=> $aptavail->VoyagerPropertyId,
 					"VoyagerPropertyCode" 	=> $aptavail->VoyagerPropertyCode,
@@ -157,49 +169,7 @@ class DoranCafe_API_Services
 
 
 
-	// next step is to loop through each unique floor plan and insert each unique unit into dc_units
 
-
-	public function dc_get_units() {
-		// loop through grouped floorplans
-		$db = dc_get_db();
-		global $wpdb;
-		$unit_qry = "
-			SELECT * 
-			FROM $db->dc_aptavail
-			ORDER BY ApartmentName
-		"; 
-
-		$units = $wpdb->get_results( $unit_qry, OBJECT );
-		// var_dump( $units );
-		if ( $units ) { ?>
-			<table>
-				<thead>
-					<tr>
-					<th>Unit#</th>
-					<th>Beds</th>
-					<th>Baths</th>
-					<th>SQFT</th>
-					<th>MaximumRent</th>
-					<th>Amenities</th>
-					<th>AvailableDate</th>
-					</tr>
-				</thead>
-				<tbody><?php 
-				foreach( $units as $unit ) :
-					echo '<tr>';
-					echo '<td>' . $unit->ApartmentName . '</td>';
-					echo '<td>' . $unit->Beds . '</td>';
-					echo '<td>' . $unit->Baths . '</td>';
-					echo '<td>' . $unit->SQFT . '</td>';
-					echo '<td>' . $unit->MaximumRent . '</td>';
-					echo '<td>' . $unit->Amenities . '</td>';
-					echo '<td>' . $unit->AvailableDate . '</td>';
-					echo '</tr>';
-				endforeach;
-			echo '</tbody></table>';
-		}
-	}
 
 }
 

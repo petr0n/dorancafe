@@ -1,11 +1,12 @@
 module.exports = {
 	domain: 'http://local.dorancafe.com:8888',
 	paths: {
-		scripts: './assets/js',
+		scripts_admin: 	'./admin/js',
+		styles_admin: 	'./admin/css',
+		dist_admin: 	'./admin/dist',
 		scripts_public: './public/js',
-		styles: './assets/css',
-		public_styles: './public/css',
-		dist: './assets/dist'
-		dist_public: './public/dist'
-	}
+		styles_public: 	'./public/css',
+		dist_public: 	'./public/dist'
+	},
+	isProduction: false
 }

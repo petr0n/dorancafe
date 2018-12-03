@@ -31,16 +31,27 @@ class DoranCafe_Activator {
 	 */
 	public static function activate() {
 
+		// create tables if not exist
+		$this->dc_create_floorplan_table();
+		$this->dc_create_aptavail_table();
+		$this->dc_create_scheduled_jobs_table();
+
+
+		$dc_api_services = new DoranCafe_API_Services();
+		// pull down data, save as text and insert into new tables
+		$dc_api_services->dc_get_unit_data();
+
 	}
 
 
 	public function dc_create_floorplan_table() {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
+		$tbl_name = $wpdb->prefix . 'dc_floorplans';
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		//* Create the table
-		$sql = "CREATE TABLE IF NOT EXISTS `dc_floorplans` (
+		$sql = "CREATE TABLE IF NOT EXISTS `${tbl_name}` (
 			FloorplanTblId INTEGER NOT NULL AUTO_INCREMENT,
 			PropertyId INTEGER NOT NULL,
 			FloorplanId TEXT NOT NULL,
@@ -71,10 +82,11 @@ class DoranCafe_Activator {
 	public function dc_create_aptavail_table() {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
+		$tbl_name = $wpdb->prefix . 'dc_aptavail';
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		//* Create the table
-		$sql = "CREATE TABLE IF NOT EXISTS `dc_aptavail` (
+		$sql = "CREATE TABLE IF NOT EXISTS `${tbl_name}` (
 			AptAvailTblId INTEGER NOT NULL AUTO_INCREMENT,
 			PropertyId INTEGER NOT NULL,
 			VoyagerPropertyId INTEGER NOT NULL,
@@ -105,11 +117,11 @@ class DoranCafe_Activator {
 	function dc_create_scheduled_jobs_table() {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
+		$tbl_name = $wpdb->prefix . 'dc_scheduled_jobs';
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		//* Create the table
-		$db = dc_get_db();
-		$sql = "CREATE TABLE IF NOT EXISTS `$db->dc_scheduled_jobs` (
+		$sql = "CREATE TABLE IF NOT EXISTS `${tbl_name}` (
 			ScheduledJobTblId INTEGER NOT NULL AUTO_INCREMENT,
 			JobName TEXT NOT NULL,
 			JobStartDate TIMESTAMP NOT NULL,
@@ -118,7 +130,7 @@ class DoranCafe_Activator {
 			PRIMARY KEY (ScheduledJobTblId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		//echo '<br>' . $db->dc_scheduled_jobs . ' table created';
+		echo '<br>dc_scheduled_jobs table created';
 	}
 
 }

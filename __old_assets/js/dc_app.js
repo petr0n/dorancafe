@@ -16,4 +16,4 @@ var schedule_services 	= require('./dc_schedule_services.js');
 $(function() {
 	api_services.init();
 	schedule_services.init();
-});
+}); 

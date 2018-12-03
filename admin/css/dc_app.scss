@@ -6,7 +6,7 @@ App
  * Vendor
  */
 
-//@import 'bootstrap-grid/grid.scss'; // Includes grid boostrap styles
+@import 'bootstrap-grid/grid.scss'; // Includes grid boostrap styles
 // @import "vendor/bootstrap/scss/variables.scss";
 // @import "vendor/fontawesome/font-awesome.scss";
 // @import (reference) "vendor/bootstrap/less/mixins.less";
@@ -24,4 +24,4 @@ App
  * Plugin modules
  */
 
-@import 'dc_public_main';
+@import 'main.scss';

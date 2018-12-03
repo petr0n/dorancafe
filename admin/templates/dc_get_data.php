@@ -30,7 +30,9 @@
 		</div> 
 	-->
 		<div class="row">
-			<div class="col-md-12" id="notifications">					
+			<div class="col-md-12" id="notifications"><?php 
+			// $dc_api_services = new DoranCafe_API_Services();
+			// $dc_api_services->dc_get_unit_data(); ?>				
 			</div>
 		</div>
 	</form>
