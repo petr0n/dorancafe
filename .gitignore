@@ -37,5 +37,8 @@ Thumbs.db
 *.sql
 *log.txt
 
+# Ignore all text files
+*.txt
+
 *.DS_Store
 .DS_Store
