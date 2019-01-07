@@ -60,6 +60,7 @@ if(!defined('DORANCAFE_PATH'))
  * This action is documented in includes/class-dorancafe-activator.php
  */
 function activate_dorancafe() {
+	dc_log_me( 'activate_dorancafe started' );
 	require_once DORANCAFE_PATH . 'includes/dc_class_activator.php';
 	DoranCafe_Activator::activate();
 }
@@ -73,8 +74,8 @@ function deactivate_dorancafe() {
 	DoranCafe_Deactivator::deactivate();
 }
 
-register_activation_hook( DORANCAFE_PATH, 'activate_dorancafe' );
-register_deactivation_hook( DORANCAFE_PATH, 'deactivate_dorancafe' );
+register_activation_hook( __FILE__, 'activate_dorancafe' );
+register_deactivation_hook( __FILE__, 'deactivate_dorancafe' );
 
 
 
@@ -86,22 +87,15 @@ register_deactivation_hook( DORANCAFE_PATH, 'deactivate_dorancafe' );
 require DORANCAFE_PATH . 'includes/dc_class_dorancafe.php';
 
 
-
-
-
-
-function dc_log_me( $contents ){
-	$file = DORANCAFE_PATH . 'logs/log.txt';
-	$right_now = (new DateTime())->format('Ymd H:i:s');
-	$new_contents =  $right_now . ' - ' . $contents . PHP_EOL;
-	file_put_contents($file, $new_contents, FILE_APPEND);
-}
-
-
-
 /*
- * Main class
+ * utils functions
  */
+require DORANCAFE_PATH . 'includes/dc_utils.php';
+
+
+
+
+
 
 /**
  * Class DoranCafe

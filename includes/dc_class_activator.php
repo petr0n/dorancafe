@@ -31,20 +31,22 @@ class DoranCafe_Activator {
 	 */
 	public static function activate() {
 
+		dc_log_me( 'DoranCafe_Activator started' );
 		// create tables if not exist
-		$this->dc_create_floorplan_table();
-		$this->dc_create_aptavail_table();
-		$this->dc_create_scheduled_jobs_table();
+		self::dc_create_floorplan_table();
+		self::dc_create_aptavail_table();
+		self::dc_create_scheduled_jobs_table();
+		self::dc_create_unit_files_table();
 
 
-		$dc_api_services = new DoranCafe_API_Services();
+		// $dc_api_services = new DoranCafe_API_Services();
 		// pull down data, save as text and insert into new tables
-		$dc_api_services->dc_get_unit_data();
+		// $dc_api_services->dc_get_unit_data();
 
 	}
 
 
-	public function dc_create_floorplan_table() {
+	private static function dc_create_floorplan_table() {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
 		$tbl_name = $wpdb->prefix . 'dc_floorplans';
@@ -74,12 +76,12 @@ class DoranCafe_Activator {
 			PRIMARY KEY (FloorplanTblId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		echo '<br> dc_floorplans table created';
+		dc_log_me( 'dc_floorplans table created' );
 	}
 
 
 
-	public function dc_create_aptavail_table() {
+	private static function dc_create_aptavail_table() {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
 		$tbl_name = $wpdb->prefix . 'dc_aptavail';
@@ -106,15 +108,33 @@ class DoranCafe_Activator {
 			Specials TEXT,
 			Amenities TEXT NOT NULL,
 			AvailableDate TEXT NOT NULL,
+			UnitPDF TEXT NULL,
 			PRIMARY KEY (AptAvailTblId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		echo '<br> dc_aptavail table created';
+		dc_log_me( 'dc_aptavail table created' );
 	}
 
 
+	private static function dc_create_unit_files_table() {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		$tbl_name = $wpdb->prefix . 'dc_unit_files';
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-	function dc_create_scheduled_jobs_table() {
+		//* Create the table
+		$sql = "CREATE TABLE IF NOT EXISTS `${tbl_name}` (
+			UnitFilesId INTEGER NOT NULL AUTO_INCREMENT,
+			FileName TEXT NOT NULL,
+			ApartmentName INTEGER NOT NULL,
+			PRIMARY KEY (UnitFilesId)
+		) $charset_collate;";
+		dbDelta( $sql );
+		dc_log_me( 'dc_unit_files table created' );
+	}
+
+
+	private static function dc_create_scheduled_jobs_table() {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
 		$tbl_name = $wpdb->prefix . 'dc_scheduled_jobs';
@@ -130,7 +150,7 @@ class DoranCafe_Activator {
 			PRIMARY KEY (ScheduledJobTblId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		echo '<br>dc_scheduled_jobs table created';
+		dc_log_me( 'dc_scheduled_jobs table created' );
 	}
 
 }

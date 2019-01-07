@@ -18,8 +18,7 @@ class DoranCafe
 		$this->plugin_name = 'dorancafe';
 
 		$this->dc_load_dependencies();
-
-
+	
 	}
 
 	/*

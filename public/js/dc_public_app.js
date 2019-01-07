@@ -3,7 +3,6 @@
  */
 
 require('es5-shim');
-require('consolelog');
 
 var $               	= require('jquery');
 var search        		= require('./dc_public_search.js');

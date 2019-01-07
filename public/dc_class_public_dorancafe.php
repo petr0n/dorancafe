@@ -131,13 +131,14 @@ class DoranCafe_Public {
 		// var_dump( $units );
 	
 		if ( $units ) { ?>
-			<table>
+			<table width="100%">
 				<thead>
 					<tr>
+					<th></th>
 					<th>Unit#</th>
 					<th>Beds</th>
 					<th>Baths</th>
-					<th>SQFT</th>
+					<th>Square Ft.</th>
 					<th>MaximumRent</th>
 					<th>Amenities</th>
 					<th>AvailableDate</th>
@@ -145,13 +146,15 @@ class DoranCafe_Public {
 				</thead>
 				<tbody><?php 
 				foreach( $units as $unit ) :
+					// $amens = explode('^', $unit->Amenities);
 					echo '<tr>';
+					echo '<td><img src="' . $unit->UnitImageURLs . '" alt="Unit: ' . $unit->ApartmentName . '" width="100"></td>';
 					echo '<td>' . $unit->ApartmentName . '</td>';
 					echo '<td>' . $unit->Beds . '</td>';
 					echo '<td>' . $unit->Baths . '</td>';
 					echo '<td>' . $unit->SQFT . '</td>';
 					echo '<td>$' . $unit->MaximumRent . '</td>';
-					echo '<td>' . $unit->Amenities . '</td>';
+					echo '<td>' . str_replace('^', ', ', $unit->Amenities) . '</td>';
 					echo '<td>' . $unit->AvailableDate . '</td>';
 					echo '</tr>';
 				endforeach;

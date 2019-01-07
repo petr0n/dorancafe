@@ -5,3 +5,209 @@ main
 p {
 	font-size: 1em;
 }
+
+a {
+	outline: none;
+}
+
+/***************************/
+/* The Modal */
+/***************************/
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+	background-color: #fefefe;
+	margin: 15% auto; /* 15% from the top and centered */
+	padding: 20px;
+	border: 1px solid #888;
+	width: 50%; /* Could be more or less, depending on screen size */
+	.modal-form-wrapper {
+		margin-top: 21px;
+	}
+}
+
+/* The Close Button */
+.close {
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+
+/***************************/
+/* The Modal Form */
+/***************************/
+[data-name="apt_id"] { // hiding part of the acf form
+	display: none;
+}
+
+/***************************/
+/* Tabs */
+/***************************/
+.dc-tabs {
+	.tabs {
+		border-bottom: 4px solid #555;
+		padding-bottom: 3px;
+		a {
+			border-radius: 3px;
+			border-top: 1px solid #555;
+			border-left: 1px solid #555;
+			border-right: 1px solid #555;
+			color: #333;
+			padding: 5px 20px;
+			margin-right: 10px;
+			text-decoration: none;
+			&.active {
+				background-color: #333;
+				color: white;
+			}
+		}
+	}
+	.tab-panels {
+		div.panel {
+			display: none;	
+			&:first-of-type {
+				display: block;
+			}
+		}
+	}
+}
+
+.container {
+	margin: 0;
+}
+
+
+/***************************/
+/* The data table */
+/***************************/
+$headerBackground      : hsl(0, 60%, 75%);
+/*** Arrows ***/
+$arrowPosition : right 5px center;
+
+/* black */
+$unsortedBlack : url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
+$sortAscBlack  : url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7);
+$sortDescBlack : url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7);
+
+/* white */
+$unsortedWhite : url(data:image/gif;base64,R0lGODlhFQAJAIAAAP///////yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
+$sortAscWhite  : url(data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7);
+$sortDescWhite : url(data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7);
+/* automatically choose the correct arrow/text color */
+@function set-lightness($a, $b) {
+	@if (lightness($headerBackground) >= 50) {
+		@return $a;
+	} @else {
+		@return $b;
+	}
+}
+@mixin unsorted {
+	background-image: set-lightness($unsortedBlack, $unsortedWhite);
+}
+@mixin sortAsc {
+	background-image: set-lightness($sortAscBlack, $sortAscWhite);
+}
+@mixin sortDesc {
+	background-image: set-lightness($sortDescBlack, $sortDescWhite);
+}
+$headerPadding         : 1px 20px 1px 1px;
+$overallPadding        : 1px;
+$headerAsc             : #ccc; /* darken($headerBackground, 10%); */
+$headerDesc            : #e8e8e8; /* desaturate($headerAsc, 5%); */
+
+.unit-grid {
+	thead {
+		cursor: pointer;
+		background: #c9dff0;
+		tr th { 
+			font-weight: bold;
+			padding: 5px 20px;
+			padding-left: 5px;
+			span { 
+				background-repeat: no-repeat;
+				background-position: 100% 100%;
+			}
+			&:hover {
+				background: yellow;
+			}
+			&.headerSortUp, &.headerSortDown {
+				background: #acc8dd;
+			}
+		}
+	}
+	tbody tr { 
+		color: #555;
+		td {
+			text-align: center;
+			padding: 2px;
+			&.lalign {
+				text-align: left;
+			}
+			&.primary {
+				background-color: #E8E8E8;
+			}
+		}
+	}
+		/* style header */
+	.tablesorter-header {
+		@include unsorted;
+		background-repeat: no-repeat;
+		background-position: $arrowPosition;
+		padding: $headerPadding;
+		cursor: pointer;
+	}
+
+	.tablesorter-header.sorter-false {
+		background-image: none;
+		cursor: default;
+		padding: $overallPadding;
+	}
+
+	.tablesorter-headerAsc {
+		background-color: $headerAsc;
+		@include sortAsc;
+	}
+
+	.tablesorter-headerDesc {
+		background-color: $headerDesc;
+		@include sortDesc;
+	}
+}
+
+
+.get-data {
+	border: none;
+	border-radius: 3px;
+	box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.5);
+	background-color: #4F8AFF;
+	color: white;
+	cursor: pointer;
+	font-weight: bold;
+	margin-top: 0.8em;
+	padding: 8px 13px;
+	&:hover {
+		box-shadow: none;
+	}
+}
+

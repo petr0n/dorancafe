@@ -25,7 +25,7 @@ function init() {
 			api_services_error( $the_form, 'AptAvail URL required');
 		} else {
 
-			//console.log( 'value ' + $the_form.find('input#api_url_aptavail').val() );
+			console.log( 'value ' + $the_form.find('input#api_url_aptavail').val() );
 			var note = $('#notifications');
 			note.empty();
 
@@ -38,6 +38,7 @@ function init() {
 					api_url_aptavail: url_aptavail
 				},
 				success : function( response ) {
+					console.log('response: ' + response);
 					note.fadeIn('slow', function(){
 						$(this).append(response);
 					});

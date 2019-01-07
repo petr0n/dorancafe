@@ -96,19 +96,23 @@
 				<input type="checkbox" name="features5" value="Appliance">
 			</label>
 			
-			<select name="display_count" id="display_count">
-				<option value="12" selected="selected">12</option>
-				<option value="24">24</option>
-				<option value="36">38</option>
-			</select>
+			<label for="display_count">Display
+				<select name="display_count" id="display_count">
+					<option value="12" selected="selected">12</option>
+					<option value="24">24</option>
+					<option value="36">38</option>
+				</select>
+			</label>
 
-			<select name="sort_by" id="sort_by">
-				<option value="" selected="selected">-select-</option>
-				<option value="price_high">Price (highest)</option>
-				<option value="price_low">Price (lowest)</option>
-				<option value="size_high">Size (highest)</option>
-				<option value="size_low">Size (lowest)</option>
-			</select>
+			<label for="sort_by">Sort By
+				<select name="sort_by" id="sort_by">
+					<option value="" selected="selected">-select-</option>
+					<option value="price_high">Price (highest)</option>
+					<option value="price_low">Price (lowest)</option>
+					<option value="size_high">Size (highest)</option>
+					<option value="size_low">Size (lowest)</option>
+				</select>
+			</label>
 		
 		</form>
 		<a href="" class="clear_filter" id="clear_filter">Clear Filters</a>

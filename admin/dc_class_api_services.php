@@ -19,55 +19,67 @@ class DoranCafe_API_Services
 	 */
 	public function __construct()
 	{
-		add_action( 'wp_ajax_dc_get_unit_data', 'dc_get_unit_data' );
+		
+		// add_action('wp_ajax_nopriv_dc_get_unit_data', array( $this, 'dc_get_unit_data'));
+		// add_action( 'wp_ajax_dc_get_unit_data', array( $this, 'dc_get_unit_data'));
 	}
 
 	public function dc_get_unit_data() {
 
-		if ( $_POST['api_url_floorplan'] ) {
-			$api_url_floorplan = $_POST['api_url_floorplan'];
-			$request_floorplan = wp_remote_get( $api_url_floorplan );
-		} else {
-			echo 'floorplan missing!';
-			return false;
-		}
-		if ( $_POST['api_url_aptavail'] ) {
-			$api_url_aptavail = $_POST['api_url_aptavail'];
-			$request_aptavail = wp_remote_get( $api_url_aptavail );
-		} else {
-			echo 'aptavail missing!';
-			return false;
-		}
-		// $_POST['api_url_aptavail'] = 'https://api.rentcafe.com/rentcafeapi.aspx?requestType=apartmentAvailability&companyCode=c00000075513&propertyid=846708&sortOrder=apartmentName';
-		// if ( $_POST['api_url_aptavail'] ) {
-		// 	$api_url_aptavail = $_POST['api_url_aptavail'];
-		// 	$request_aptavail = wp_remote_get( $api_url_aptavail );
-		// } else {
-		// 	echo 'aptavail missing!';
-		// 	return false;
-		// }
+		/* 
+		hiding floorplans for now
+		
+		$get_api_floorplan_url = get_field('rentcafe_api_endpoint', 'options') . '?requestType=floorplan';
+		$get_api_floorplan_url .= '&companyCode=' . get_field('company_code', 'options');
+		$get_api_floorplan_url .= '&propertyid=' . get_field('property_id', 'options');
 
+		$api_url_floorplan = $_POST['api_url_floorplan'] ? $_POST['api_url_floorplan'] : get_field('');
+		$request_floorplan = wp_remote_get( $api_url_floorplan );
 
-		// if( is_wp_error( $request_floorplan ) || is_wp_error( $request_aptavail )) {
-		if( is_wp_error( $request_aptavail )) {
-			echo 'Uh Oh! wp_remote_get error';
+		if( is_wp_error( $request_floorplan )) {
+			echo 'Uh Oh! wp_remote_get on "request_floorplan" error';
 			return false; // Bail early
 		}
-		
+
 		// get remote data
-		// $body_floorplan = wp_remote_retrieve_body( $request_floorplan );
-		$body_aptavail = wp_remote_retrieve_body( $request_aptavail );
-		// $data_floorplan = json_decode( $body );
+		$body_floorplan = wp_remote_retrieve_body( $request_floorplan );
 
 		// save data to local file
-		// $this->dc_save_file( 'floorplan', $body_floorplan );
-		$this->dc_save_file( 'aptavail', $body_aptavail );
-		
+		$this->dc_save_file( 'floorplan', $body_floorplan );
+
 		// add new data to db
-		// $this->dc_insert_floorplan_data();
-		$this->dc_insert_aptavail_data();
-		// dc_get_units();
-		// die();
+		$this->dc_insert_floorplan_data();
+		*/
+
+
+		if ( get_field('company_code', 'options') && get_field('rentcafe_api_endpoint', 'options') ) {
+
+			$get_api_aptavail_url = get_field('rentcafe_api_endpoint', 'options') . '?requestType=apartmentAvailability&sortOrder=apartmentName';
+			$get_api_aptavail_url .= '&companyCode=' . get_field('company_code', 'options');
+			$get_api_aptavail_url .= '&propertyid=' . get_field('property_id', 'options');
+			
+			// $api_url_aptavail = $_POST['api_url_aptavail'] ? $_POST['api_url_aptavail'] : $get_api_aptavail_url;
+			$api_url_aptavail = $get_api_aptavail_url;
+			$request_aptavail = wp_remote_get( $api_url_aptavail );
+
+			if( is_wp_error( $request_aptavail )) {
+				dc_log_me( 'Uh Oh! wp_remote_get on "request_aptavail" error' );
+				return false; // Bail early
+			}
+			
+			// get remote data
+			$body_aptavail = wp_remote_retrieve_body( $request_aptavail );
+
+			// save data to local file
+			$this->dc_save_file( 'aptavail', $body_aptavail );
+			
+			// add new data to db
+			$this->dc_insert_aptavail_data();
+			// dc_get_units();
+			die();
+		} else {
+			
+		}
 	}
 
 
@@ -76,7 +88,7 @@ class DoranCafe_API_Services
 		$today = date('YmdHis');
 		$filepath_to_save = DORANCAFE_PATH . 'rentcafe_data/' . $filename . '/' . $filename . '_' . $today . '.txt';
 		file_put_contents( $filepath_to_save, $data_to_save);
-		echo 'file saved: dc_' . $filename . '_' . $today . '.txt<br>';
+		dc_log_me( 'dc_' . $filename . '_' . $today . '.txt' );
 	}
 
 
@@ -113,15 +125,9 @@ class DoranCafe_API_Services
 					"FloorplanHasSpecials"	=> $floorplan->FloorplanHasSpecials,
 					"UnitTypeMapping" 		=> $floorplan->UnitTypeMapping
 				));
-				// echo '<li>';
-				// 	echo 'tbl: ' . $db->dc_floorplans;
-				// 	echo '<br>propid: ' . $floorplan->PropertyId; 
-				// 	echo '<br>name: ' . $floorplan->FloorplanName . '<hr>';
-				// echo '</li>';
 			}
-			//echo '</ul>';
 		}
-		echo '<br>floorplans data inserted<br>';
+		dc_log_me( 'floorplans data inserted' );
 	}
 
 
@@ -137,6 +143,7 @@ class DoranCafe_API_Services
 			$tbl_name = $wpdb->prefix . 'dc_aptavail';
 			$delete = $wpdb->query('TRUNCATE TABLE ' . $tbl_name); //delete data first
 			foreach( $aptavails as $aptavail ) {
+				$unit_img = $aptavail->UnitImageURLs[0] ? $aptavail->UnitImageURLs[0] : '';
 				$wpdb->insert($tbl_name, array(
 					"PropertyId" 			=> $aptavail->PropertyId,
 					"VoyagerPropertyId" 	=> $aptavail->VoyagerPropertyId,
@@ -151,102 +158,17 @@ class DoranCafe_API_Services
 					"MinimumRent" 			=> $aptavail->MinimumRent,
 					"MaximumRent"			=> $aptavail->MaximumRent,
 					"Deposit"				=> $aptavail->Deposit,
+					"UnitImageURLs"			=> $unit_img,
 					"ApplyOnlineURL"		=> $aptavail->ApplyOnlineURL,
 					"Specials"				=> $aptavail->Specials,
 					"Amenities"				=> $aptavail->Amenities,
 					"AvailableDate"			=> $aptavail->AvailableDate
 				));
-				// echo '<li>';
-				// 	echo 'tbl: ' . $db->dc_floorplans;
-				// 	echo '<br>propid: ' . $floorplan->PropertyId; 
-				// 	echo '<br>name: ' . $floorplan->FloorplanName . '<hr>';
-				// echo '</li>';
 			}
-			//echo '</ul>';
 		}
-		echo '<br>aptavail data inserted<br>';
+		dc_log_me( 'aptavail data inserted' );
 	}
 
 
-
-
-
 }
 
-
-
-// function dc_get_unique_floorplans() {
-// 	// loop through grouped floorplans
-// 	$db = dc_get_db();
-// 	global $wpdb;
-// 	$floorplan_qry = "
-// 		SELECT * 
-// 		FROM $db->dc_floorplans 
-// 		GROUP BY FloorplanId
-// 		ORDER BY FloorplanId
-// 	"; 
-
-// 	$grouped_floorplans = $wpdb->get_results( $qry, OBJECT );
-// 	// var_dump( $grouped_floorplans );
-// 	if ( $grouped_floorplans ) { // file not blank
-// 		global $wpdb;
-// 		// echo '<ul>';
-// 		foreach( $grouped_floorplans as $floorplan ) {
-// 			echo '<br>name: ' . $floorplan->FloorplanName . '<hr>';
-// 			// get individual units from aptavail 
-// 			$aptavail_qry = "
-// 				SELECT *
-// 				FROM $dc->dc_aptavail
-// 				WHERE FloorplanName = '$floorplan->FloorplanName'
-// 			";
-// 		}
-// 	}
-// }
-
-/*
-	floorplan request
-{
-"PropertyId":"846708",
-"FloorplanId":"2517452",
-"FloorplanName":"Braemar",
-"Beds":"0",
-"Baths":"1.00",
-"MinimumSQFT":"487",
-"MaximumSQFT":"487",
-"MinimumRent":"1295",
-"MaximumRent":"1370",
-"MinimumDeposit":"0",
-"MaximumDeposit":"0",
-"AvailableUnitsCount":"4",
-"AvailabilityURL":"https://www.rentcafe.com/onlineleasing/aria-0/oleapplication.aspx?stepname=Apartments&myOlePropertyId=846708&floorPlans=2517452",
-"FloorplanImageURL":"https://cdn.rentcafe.com/dmslivecafe/3/846708/Braemar.png",
-"FloorplanImageName":"Braemar.png",
-"PropertyShowsSpecials":"0",
-"FloorplanHasSpecials":"0",
-"UnitTypeMapping":"S1"
-}
-
-apartment availability
-
-"PropertyId":"846708",
-"VoyagerPropertyId":"63",
-"VoyagerPropertyCode":"aria",
-"FloorplanId":"2517452",
-"FloorplanName":"Braemar",
-"ApartmentId":"13987569",
-"ApartmentName":"337",
-"Beds":"0",
-"Baths":"1.00",
-"SQFT":"487",
-"MinimumRent":"1295.00",
-"MaximumRent":"1295.00",
-"Deposit":"0",
-"ApplyOnlineURL":"https://www.rentcafe.com/onlineleasing/aria-0/oleapplication.aspx?stepname=RentalOptions&myOlePropertyId=846708&FloorPlanID=2517452&UnitID=13987569&header=1",
-"UnitImageURLs":[  
- "https://cdn.rentcafe.com/dmslivecafe/3/846708/Apt 337.png"
-],
-"Specials":"",
-"Amenities":"3rd Floor^Amenities View",
-"AvailableDate":"9/12/2018"
-
-*/
