@@ -2,7 +2,7 @@
  *  Module: tablesorter
  */
 
-var $ 				= require('jquery');
+//var $ 				= require('jquery');
 require('./vendor/jquery.tablesorter.min');
 require('./vendor/jquery.tablesorter.widgets.min');
 

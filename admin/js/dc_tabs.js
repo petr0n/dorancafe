@@ -2,7 +2,7 @@
  *  Module: tabs
  */
 
-var $ 				= require('jquery');
+//var $ 				= require('jquery');
 
 /**
  * Initialize tabs

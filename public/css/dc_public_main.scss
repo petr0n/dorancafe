@@ -1,4 +1,118 @@
 
+.dc-form-container {
+	text-align: left;
+	width: 100%;
+	.dc-form-wrapper-header {
+		display: flex;
+		.left-col {
+			width: 50%;
+			padding-right: 2%;
+		}
+		.right-col {
+			width: 50%;
+		}
+	}
+}
+.dc-clear-filter {
+	width: 100%;
+	text-align: center;
+}
+.dc-form-row {
+	width: 100%;
+	display: flex;
+	margin-bottom: 8px;
+	align-items: center;
+	label {
+		width: 40%;
+		text-align: right;
+		padding-right: 10px;
+	}
+	.dc-form-element {
+		width: 60%;
+		input[type="input"],select {
+			border: 1px solid #a08f6a;
+			border-radius: 2px;
+			-webkit-appearance: none;
+			padding: 13px;
+			width: 100%;
+		}
+		input[type="checkbox"] {
+			width: auto;
+		}
+		select { // adds arrows
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAANCAYAAAC+ct6XAAAAGXRFW…IsJTc7FQAxDxD7AbEzEF+jR1DDywtoCr9DbhwzDlRZDRBgACYqHJO9bkklAAAAAElFTkSuQmCC);
+			background-position: center right;
+			background-repeat: no-repeat;
+		}
+	}
+	&.dc-form-check {
+		.dc-form-element {
+			width: auto;
+		}
+		label {
+			text-align: left;
+			width: auto;
+			padding-left: 10px;
+		}
+	}
+}
+.dc-form-footer {
+	display: flex;
+	.left-col,
+	.right-col {
+		width: 50%;
+	}
+	.right-col {
+		.sort {
+			float: right;
+		}
+	}
+}
+.dc-search-results {
+	.dc-viewing {
+		text-align: center;
+		font-style: italic;
+	}
+	.dc-results {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+		text-align: left;
+		.unit {
+			border: 1px solid #FFF;
+			color: black;
+			width: 30%;
+			height: auto;
+			margin-bottom: 1.2em;
+			.unit--num {
+
+			}
+			.unit--meta {
+
+			}
+			.unit--img {
+				width: 80%;
+				img {
+					max-width: 100%;
+				}
+			}
+			.bottom-bar {
+				background: none;
+				height: 10px;
+				width: 100%;
+			}
+			&:hover {
+				border: 1px solid #E8E8E8;
+				text-decoration: none;
+				.bottom-bar {
+					background: linear-gradient(90deg, #A08F6A 0%, #7DB5B0 100%) no-repeat 50% 50% / 100% 100%;
+				}
+			}
+		}
+	}
+}
+
 form {
 	input[type="checkbox"] {
 		margin: 9px;

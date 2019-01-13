@@ -24,6 +24,17 @@ class DoranCafe_API_Services
 		// add_action( 'wp_ajax_dc_get_unit_data', array( $this, 'dc_get_unit_data'));
 	}
 
+	public function dc_get_settings() {
+		global $wpdb;
+		$settings_qry = " 
+			SELECT *
+			FROM wp_dc_settings
+			LIMIT 1";
+		$settings = $wpdb->get_results( $settings_qry, OBJECT );
+		// var_dump( $units );
+		return $settings;
+	}
+
 	public function dc_get_unit_data() {
 
 		/* 
@@ -51,12 +62,13 @@ class DoranCafe_API_Services
 		$this->dc_insert_floorplan_data();
 		*/
 
-
-		if ( get_field('company_code', 'options') && get_field('rentcafe_api_endpoint', 'options') ) {
+		$settings = $this->dc_get_settings();
+		if ( $settings[0]->EndpointUrl ) {
 
 			$get_api_aptavail_url = get_field('rentcafe_api_endpoint', 'options') . '?requestType=apartmentAvailability&sortOrder=apartmentName';
 			$get_api_aptavail_url .= '&companyCode=' . get_field('company_code', 'options');
 			$get_api_aptavail_url .= '&propertyid=' . get_field('property_id', 'options');
+			$get_api_aptavail_url = $settings[0]->EndpointUrl;
 			
 			// $api_url_aptavail = $_POST['api_url_aptavail'] ? $_POST['api_url_aptavail'] : $get_api_aptavail_url;
 			$api_url_aptavail = $get_api_aptavail_url;

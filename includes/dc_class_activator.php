@@ -33,10 +33,11 @@ class DoranCafe_Activator {
 
 		dc_log_me( 'DoranCafe_Activator started' );
 		// create tables if not exist
-		self::dc_create_floorplan_table();
+		// self::dc_create_floorplan_table(); don't think this is needed
 		self::dc_create_aptavail_table();
 		self::dc_create_scheduled_jobs_table();
 		self::dc_create_unit_files_table();
+		self::dc_create_settings_table();
 
 
 		// $dc_api_services = new DoranCafe_API_Services();
@@ -77,6 +78,23 @@ class DoranCafe_Activator {
 		) $charset_collate;";
 		dbDelta( $sql );
 		dc_log_me( 'dc_floorplans table created' );
+	}
+
+	private static function dc_create_settings_table() {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		$tbl_name = $wpdb->prefix . 'dc_settings';
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		//* Create the table
+		$sql = "CREATE TABLE IF NOT EXISTS `${tbl_name}` (
+			SettingId INTEGER NOT NULL AUTO_INCREMENT,
+			EndpointUrl TEXT NOT NULL,
+			FetchDataTime TEXT NOT NULL,
+			PRIMARY KEY (SettingId)
+		) $charset_collate;";
+		dbDelta( $sql );
+		dc_log_me( 'dc_settings table created' );
 	}
 
 

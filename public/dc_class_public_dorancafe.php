@@ -91,6 +91,10 @@ class DoranCafe_Public {
 			'size_low'  => 'SQFT DESC'
 		);
 
+		$offset_arg = ''; // default offet - pagination
+		$display_count_arg = 12; // default display_count
+
+
 		$sort_by_args = 'ORDER BY ApartmentName';
 		$args = '';
 
@@ -107,8 +111,10 @@ class DoranCafe_Public {
 					$args .= "ApartmentName LIKE '" . intval($value) . "%' AND ";
 				} else if ( $key == 'unit_view' ) {
 					$args .= "Amenities LIKE '%" . $value . "%' AND ";
+				} else if ( $key == 'display_count' ) {
+					$display_count_arg = filter_var($value, FILTER_SANITIZE_STRING);
 				} else {
-					$args .= $key . ' = "' . filter_var($value, FILTER_SANITIZE_STRING) . '" AND ';
+					//$args .= $key . ' = "' . filter_var($value, FILTER_SANITIZE_STRING) . '" AND ';
 				}
 			}
 		}
@@ -120,6 +126,10 @@ class DoranCafe_Public {
 		// add sorting
 		$args .= $sort_by_args;
 
+		// add record limit 
+		$offset_arg = $offset_arg != '' ? $offset_arg . ',' : '';
+		$args .= ' Limit ' . $offset_arg . $display_count_arg;
+
 		global $wpdb;
 		$tbl_name = $wpdb->prefix . 'dc_aptavail';
 		$unit_qry = 'SELECT * FROM ' . $tbl_name . ' ' . $args;
@@ -127,10 +137,30 @@ class DoranCafe_Public {
 		$sql = $wpdb->prepare( $unit_qry, $tbl_name );
 
 		$units = $wpdb->get_results( $sql, OBJECT );
-		// loop through grouped floorplans
-		// var_dump( $units );
-	
-		if ( $units ) { ?>
+		
+		echo '<div class="dc-viewing">';
+		echo 'You are viewing units ' . ($offset_arg == '' ? 1 : $offset_arg) . '-' . $display_count_arg . ' of ' . $wpdb->num_rows . ' results';
+		echo '</div>';
+		echo '<div class="dc-results">';
+		if ( $units ) { 
+			foreach( $units as $unit ) : ?>
+			
+			<a class="unit" href="/unit/<?php echo $unit->ApartmentName; ?>">
+				<h3 class="unit--num">Unit # <?php echo $unit->ApartmentName; ?></h3>
+				<div class="unit--meta">
+					<div class="beds">Beds: <?php echo $unit->Beds; ?></div>
+					<div class="baths">Baths: <?php echo $unit->Baths; ?></div>
+					<div class="sqft">SQFT: <?php echo $unit->SQFT; ?></div>
+					<div class="sqft">SQFT: <?php echo $unit->SQFT; ?></div>
+				</div>
+				<div class="unit--img">
+					<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>">
+				</div>
+				<div class="bottom-bar"></div>
+			</a>
+		<?php
+			endforeach; 
+			/* ?>
 			<table width="100%">
 				<thead>
 					<tr>
@@ -159,6 +189,8 @@ class DoranCafe_Public {
 					echo '</tr>';
 				endforeach;
 			echo '</tbody></table>';
+			*/
+			echo '</div>';
 		} else {
 			echo '<h3>No matches found.</h3>';
 		}

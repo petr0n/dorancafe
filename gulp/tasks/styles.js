@@ -25,7 +25,7 @@ gulp.task('styles', function() {
     }));
 });
 gulp.task('publicStyles', function() {
-  return gulp.src(paths.public_styles + '/dc_public_app.scss')
+  return gulp.src(paths.styles_public + '/dc_public_app.scss')
     .pipe(plumber({
       errorHandler: handleErrors
     }))

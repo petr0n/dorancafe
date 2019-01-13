@@ -2,7 +2,7 @@
  *  Module: api_services
  */
 
-var $ 				= require('jquery');
+//var $ 				= require('jquery');
 var $schedule_form 	= $('#schedule_form');
 
 /**

@@ -2,7 +2,7 @@
  *  Module: uploader
  */
 
-var $ 				= require('jquery');
+//var $ 				= require('jquery');
 
 /**
  * Initialize uploader
@@ -15,46 +15,49 @@ function init() {
 	modal = $('.modal');
 	btn.each(function(x){
 		var this_but = $(this);
-		var this_id = $(this).data('unit-id');
-		var this_num = $(this).data('unit-num');
+		var apt_id = $(this).data('unit-id');
+		var apt_num = $(this).data('unit-num');
 		this_but.on('click', function(e){
 			e.preventDefault();			
 			// open modal
-			create_form(this_id);
+			create_form(apt_id, apt_num);
 			modal.show(function(){
 				// add unit # to title
-				$('body').find('#dc_schedule_form_' + this_id + ' .acf-label label').text('PDF for Unit #' + this_num);
+				$('body').find('#dc_schedule_form_' + apt_id + ' .acf-field.unit-pdf label').text('PDF for Unit #' + apt_num);
 			});
 		});
 	});
 
 	$('.close').on('click', function(e){
 		if (modal.is(':visible')) {
+			$('body').find('form[id^="dc_schedule_form"]').remove();
 			modal.hide();
 		}	
 	});
 	window.onclick = function(e) {
 		if ($(e.target).hasClass('modal')) {
+			$('body').find('form[id^="dc_schedule_form"]').remove();
 			modal.hide();
 		}
 	}
 
 };
 
-function create_form(form_id) {
+function create_form(apt_id, apt_num) {
 	var form_wrapper = $('.modal-form-wrapper');
 	$.ajax({
 		url : urls.ajax,
 		type : 'post',
 		data : {
 			action : 'dc_create_upload_form',
-			form_id: form_id
+			unit_id: apt_id,
+			unit_num: apt_num
 		},
 		success : function( response ) {
-			// console.log('success response: ' + response);
 			form_wrapper.html(response);
-			$('#acf-field_5c085ee2c814f').val(form_id);
-
+			console.log('apt id: ' + $('#dc_schedule_form_' + apt_id + ' .acf-field.apt-id input'));
+			$('#dc_schedule_form_' + apt_id + ' .acf-field.apt-id input').val(apt_id);
+			$('#dc_schedule_form_' + apt_id + ' .acf-field.apt-num input').val(apt_num);
 		},
 		error : function( data, status ) {
 			// console.log('error data.responseText: ' & data.responseText);

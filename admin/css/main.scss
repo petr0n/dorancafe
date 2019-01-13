@@ -10,6 +10,14 @@ a {
 	outline: none;
 }
 
+
+.last-updated {
+	font-style: italic;
+	font-size: .7em;
+	color: #aaa;
+	padding-left: 20px;
+}
+
 /***************************/
 /* The Modal */
 /***************************/
@@ -57,7 +65,7 @@ a {
 /***************************/
 /* The Modal Form */
 /***************************/
-[data-name="apt_id"] { // hiding part of the acf form
+[data-name="apt_id"], [data-name="apt_num"] { // hiding part of the acf form
 	display: none;
 }
 
@@ -195,19 +203,101 @@ $headerDesc            : #e8e8e8; /* desaturate($headerAsc, 5%); */
 	}
 }
 
-
-.get-data {
-	border: none;
-	border-radius: 3px;
-	box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.5);
-	background-color: #4F8AFF;
-	color: white;
-	cursor: pointer;
-	font-weight: bold;
-	margin-top: 0.8em;
-	padding: 8px 13px;
-	&:hover {
-		box-shadow: none;
+#api_get_units {
+	margin: 1em 0;
+	.get-data {
+		border: none;
+		border-radius: 3px;
+		box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.5);
+		background-color: #4F8AFF;
+		color: white;
+		cursor: pointer;
+		font-weight: bold;
+		margin: 0 1px 1px 0;
+		padding: 8px 13px;
+		&:hover {
+			box-shadow: none;
+			margin: 1px 0 0 1px;
+		}
+		&:disabled {
+			background-color: #CCC;
+			box-shadow: none;
+			margin: 1px 0 0 1px;
+			cursor: not-allowed;
+		}
 	}
 }
 
+
+.lds-ring-wrapper {
+	width: 100%;
+	height: 100%;
+	background-color: #E8E8E8;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	.lds-ring {
+		display: inline-block;
+		position: relative;
+		width: 64px;
+		height: 64px;
+		div {
+			box-sizing: border-box;
+			display: block;
+			position: absolute;
+			width: 51px;
+			height: 51px;
+			margin: 6px;
+			border: 6px solid #4F8AFF;
+			border-radius: 50%;
+			animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+			border-color: #4F8AFF transparent transparent transparent;
+		}
+
+		div:nth-child(1) {
+			animation-delay: -0.45s;
+		}
+
+		div:nth-child(2) {
+			animation-delay: -0.3s;
+		}
+
+		div:nth-child(3) {
+			animation-delay: -0.15s;
+		}
+
+		@keyframes lds-ring {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+	}
+}
+
+.dc_settings_form {
+	label {
+		display: block;
+		font-weight: bold;
+		margin: 0 0 3px;
+		padding: 0;
+	}
+	.form-control {
+		margin: 0;
+		padding: 15px 12px;
+		input {
+			padding: 3px 5px;
+			margin: 0;
+			font-size: 14px;
+			line-height: 1.4;
+			height: 28px;
+			&[name="EndpointUrl"] {
+				width: 100%;
+				
+			}
+		}
+	}
+}

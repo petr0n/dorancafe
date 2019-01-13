@@ -2,7 +2,7 @@
  *  Module: api_services
  */
 
-var $ 			= require('jquery');
+//var $ 			= require('jquery');
 
 
 
@@ -14,9 +14,15 @@ function init() {
 	console.log('api_services ready');
 
 	var $the_form 	= $('#api_get_units');
+	var the_table 	= $('.units-table');
+	var $the_table_wrapper = $('.unit-table-wrapper');
 	btn = $the_form.find('button');
 	btn.on('click', function(e){
 		e.preventDefault();
+		var thisBtn = $(this);
+		thisBtn.attr('disabled','disabled');
+		$('.lds-ring-wrapper').show();
+		the_table.remove();
 		var url_floorplan = $the_form.find('input#api_url_floorplan').val();
 		var url_aptavail = $the_form.find('input#api_url_aptavail').val();
 		if ( url_floorplan == '' ) {
@@ -25,7 +31,7 @@ function init() {
 			api_services_error( $the_form, 'AptAvail URL required');
 		} else {
 
-			console.log( 'value ' + $the_form.find('input#api_url_aptavail').val() );
+			// console.log( 'value ' + $the_form.find('input#api_url_aptavail').val() );
 			var note = $('#notifications');
 			note.empty();
 
@@ -38,10 +44,20 @@ function init() {
 					api_url_aptavail: url_aptavail
 				},
 				success : function( response ) {
-					console.log('response: ' + response);
-					note.fadeIn('slow', function(){
-						$(this).append(response);
+					console.log('success');
+					$.ajax({
+						url : urls.ajax,
+						type : 'get',
+						data : {
+							action : 'dc_get_units_ajax'
+						},
+						success : function( response ) {
+							thisBtn.prop('disabled', false); //re-enable button
+							$('.lds-ring-wrapper').hide(); // hide loader 
+							$the_table_wrapper.html( response );
+						}
 					});
+					
 				},
 				error : function( data, status ) {
 					console.log('data.responseText: ' & data.responseText);

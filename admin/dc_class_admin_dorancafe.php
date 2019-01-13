@@ -53,12 +53,14 @@ class DoranCafe_Admin {
 		$this->version = $version;
 
 		$this->dc_admin_load_dependencies();
+		//$dc_settings = $this->dc_get_settings();
+		$dc_insert_settings = $this->dc_insert_settings();
 
 		// include ACF stuff
-		include_once( DORANCAFE_PATH . 'admin/vendor/advanced-custom-fields-pro/acf.php' );
-		add_filter( 'acf/settings/path', array( $this, 'dc_update_acf_settings_path' ) );
-		add_filter( 'acf/settings/dir', array( $this, 'dc_update_acf_settings_dir' ) );
-		add_action( 'admin_init', 'acf_form_head' );
+		// include_once( DORANCAFE_PATH . 'admin/vendor/advanced-custom-fields-pro/acf.php' );
+		// add_filter( 'acf/settings/path', array( $this, 'dc_update_acf_settings_path' ) );
+		// add_filter( 'acf/settings/dir', array( $this, 'dc_update_acf_settings_dir' ) );
+		// add_action( 'admin_init', 'acf_form_head' );
 
 		// get js and css
 		add_action('admin_init', array( $this, 'dc_admin_load_assets' ) );
@@ -74,15 +76,36 @@ class DoranCafe_Admin {
 		// add_action( 'acf/save_post', array( $schedule_services, 'dc_schedule_options_after_save' ), 1 );
 		
 		$api_services = new DoranCafe_API_services();
+		// get unit data from rentcafe
 		add_action('wp_ajax_nopriv_dc_get_unit_data', array( $api_services, 'dc_get_unit_data'));
 		add_action('wp_ajax_dc_get_unit_data', array( $api_services,'dc_get_unit_data'));
 
+		// load unit data into admin page
+		add_action('wp_ajax_nopriv_dc_get_units_ajax', array( $this, 'dc_get_units_ajax'));
+		add_action('wp_ajax_dc_get_units_ajax', array( $this,'dc_get_units_ajax')); 
+
+		// allow ajax upload 
 		add_action('wp_ajax_nopriv_dc_create_upload_form', array( $this, 'dc_create_upload_form'));
 		add_action('wp_ajax_dc_create_upload_form', array( $this,'dc_create_upload_form'));
 
-		// add_filter('acf/update_value', array( $this, 'dc_update_unit_pdf' ), 10, 3);
+		// insert settings
+		add_action( 'admin_post_nopriv_insert_settings', array( $this, 'dc_insert_settings' ));
+		add_action( 'admin_post_insert_settings', array( $this, 'dc_insert_settings' ));
+
+		// update settings
+		add_action( 'admin_post_nopriv_update_settings', array( $this, 'dc_update_settings' ));
+		add_action( 'admin_post_update_settings', array( $this, 'dc_update_settings' ));
+
+		add_filter('acf/update_value', array( $this, 'dc_update_unit_pdf' ), 10, 3); // does stuff after pdf upload form submit
+		add_filter('acf/prepare_field/name=unit_pdf', array( $this, 'dc_reset_pdf_field' ), 10, 3); // remove preset value of pdf field
 	}
 
+	public function dc_reset_pdf_field($field) {
+		if ($field['value']) {
+			$field['value'] = '';
+		}
+		return $field;
+	}
 	/**
 	 * Register the stylesheets for the admin-facing side of the site.
 	 *
@@ -106,19 +129,56 @@ class DoranCafe_Admin {
 
 	}
 
-	public function dc_update_acf_settings_path( $path ) {
-		$path = DORANCAFE_PATH . 'admin/vendor/advanced-custom-fields-pro/';
-		return $path;
-	}
+	// public function dc_update_acf_settings_path( $path ) {
+	// 	$path = DORANCAFE_PATH . 'admin/vendor/advanced-custom-fields-pro/';
+	// 	return $path;
+	// }
 
-	public function dc_update_acf_settings_dir( $dir ) {
-		$dir = DORANCAFE_URL . 'admin/vendor/advanced-custom-fields-pro/';
-		return $dir;
+	// public function dc_update_acf_settings_dir( $dir ) {
+	// 	$dir = DORANCAFE_URL . 'admin/vendor/advanced-custom-fields-pro/';
+	// 	return $dir;
+	// }
+
+	public function dc_get_settings() {
+		global $wpdb;
+		$settings_qry = " 
+			SELECT *
+			FROM wp_dc_settings
+			LIMIT 1";
+		$settings = $wpdb->get_results( $settings_qry, OBJECT );
+		// var_dump( $units );
+		return $settings;
+	}
+	
+	public function dc_update_settings() {
+		if (isset($_POST['EndpointUrl']) &&
+			isset($_POST['FetchDataTime']) &&
+			isset($_POST['SettingId'])) {
+			global $wpdb;
+			$settings_qry = 'UPDATE wp_dc_settings SET ';  
+			$settings_qry .= 'EndpointUrl = "' . $_POST['EndpointUrl'] . '"';
+			$settings_qry .= ', FetchDataTime = "' . $_POST['FetchDataTime'] . '"';
+			$settings_qry .= ' WHERE SettingId = ' . $_POST['SettingId'];
+			$settings = $wpdb->query( $settings_qry, OBJECT );
+		} else {
+
+		}
+	}
+	public function dc_insert_settings() {
+		if ( isset($_POST['EndpointUrl']) &&
+			isset($_POST['FetchDataTime']) ) {
+			global $wpdb;
+			$settings_qry = 'INSERT INTO wp_dc_settings ';  
+			$settings_qry .= '(EndpointUrl, FetchDataTime) ';
+			$settings_qry .= 'VALUES ("' . $_POST['EndpointUrl'] . '","' . $_POST['FetchDataTime'] . '")';
+			$settings = $wpdb->query( $settings_qry, OBJECT );
+		}
 	}
 
 	public function dc_plugin_init() {
-		// check for propid and name
-		if ( get_field( 'property_id', 'option' ) && get_field( 'property_name', 'option' ) ) {
+		$settings = $this->dc_get_settings();
+		//var_dump($settings[0]->EndpointUrl);
+		if ( $settings[0]->EndpointUrl != '' ) {
 			$this->dc_plugin_settings();
 		} else {
 			$this->dc_plugin_setup();
@@ -139,37 +199,9 @@ class DoranCafe_Admin {
 	}
 
 
-	public function dc_plugin_setup() {	?>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<h2>DoranCafe Settings Page</h2><?php 
-					if ( !get_field( 'property_id', 'option' ) || !get_field( 'property_name', 'option' ) ) : ?>
-						<p>Please set up the property to get started</p><?php 
-					endif;
-					$first_options = array(
-						'id' => 'dc_base_options_form',
-						'post_id' => 'options',
-						'new_post' => false,
-						'field_groups' => array( '12' ),
-						'return' => admin_url('admin.php?page=dorancafe&setup=complete'),
-						'submit_value' => 'Update',
-					);
-					acf_form( $first_options );
-					echo '<hr>';					
-					$schedule_options = array(
-						'id' => 'dc_schedule_form',
-						'post_id' => 'options',
-						'new_post' => false,
-						'field_groups' => array( '23' ),
-						'return' => admin_url('admin.php?page=dorancafe&form=schedule'),
-						'submit_value' => 'Update',
-						'instruction_placement' => 'field',
-					);
-					acf_form( $schedule_options );  ?>
-				</div>
-			</div>
-		</div> <?php 
+	public function dc_plugin_setup() {	
+		$dc_settings = $this->dc_get_settings();
+		include DORANCAFE_PATH . 'admin/templates/dc_settings.php';
 	}
 
 	public function dc_plugin_settings() { ?>
@@ -184,10 +216,10 @@ class DoranCafe_Admin {
 			<div class="row">
 				<div class="col-md-12">
 					<div class="tabs">
-						<a href="view-units" class="active">View Units</a>
-						<!-- <a href="get-units">Get Units</a> -->
-						<a href="schedule">Schedule</a>
-						<a href="settings">Plugin Settings</a>
+						<a href="view-units" class="active">View Units <i class="fas fa-table"></i></a>
+						<!-- <a href="get-units">Get Units</a> 
+						<a href="schedule">Schedule <i class="fas fa-clock"></i></a> -->
+						<a href="settings">Plugin Settings <i class="fas fa-cogs"></i></a>
 					</div>
 					<div class="tab-panels"><?php
 						settings_fields( 'dorancafe' );
@@ -195,14 +227,14 @@ class DoranCafe_Admin {
 					</div>
 				</div>
 			</div>
-		</div> <?php 
+		</div><?php 
 	}
 
 
 	public function dc_setup_sections() {
 		add_settings_section( 'view_data', '', array( $this, 'dc_section_callback' ), 'dorancafe' );
 		// add_settings_section( 'check_data', '', array( $this, 'dc_section_callback' ), 'dorancafe' );
-		add_settings_section( 'schedule', '', array( $this, 'dc_section_callback' ), 'dorancafe' );
+		// add_settings_section( 'schedule', '', array( $this, 'dc_section_callback' ), 'dorancafe' );
 		add_settings_section( 'settings', '', array( $this, 'dc_section_callback' ), 'dorancafe' );
 	}
 
@@ -220,40 +252,65 @@ class DoranCafe_Admin {
 				include_once( DORANCAFE_PATH . 'admin/templates/dc_view_units.php' );
 				echo '</div>';
 				break;
-			case 'schedule':
-				echo '<div class="schedule panel">';
-				include_once( DORANCAFE_PATH . 'admin/templates/dc_schedule.php' );
-				echo '</div>';
-				break;
+			// case 'schedule':
+			// 	echo '<div class="schedule panel">';
+			// 	include_once( DORANCAFE_PATH . 'admin/templates/dc_schedule.php' );
+			// 	echo '</div>';
+			// 	break;
 			case 'settings':
 				echo '<div class="settings panel">';
+				$dc_settings = $this->dc_get_settings();
 				include_once( DORANCAFE_PATH . 'admin/templates/dc_settings.php' );
 				break;
 				// $this->dc_plugin_setup();
 		}
 	}
 
-	// next step is to loop through each unique floor plan and insert each unique unit into dc_units
-
 	public function dc_get_units() {
-		// loop through grouped floorplans
 		global $wpdb;
-		$tbl_name = $wpdb->prefix . 'dc_aptavail';
-		$unit_qry = "
-			SELECT * 
-			FROM ${tbl_name}
-			ORDER BY ApartmentName
-		"; 
+		$tbl_apt = $wpdb->prefix . 'dc_aptavail';
+		$tbl_file  = $wpdb->prefix . 'dc_unit_files';
+		$unit_qry = "SELECT 
+			AptAvailTblId, 
+			PropertyId, 
+			VoyagerPropertyId, 
+			VoyagerPropertyCode, 
+			FloorplanId, 
+			FloorplanName, 
+			ApartmentId, 
+			a.ApartmentName as unitnum, 
+			Beds, 
+			Baths, 
+			SQFT, 
+			MinimumRent, 
+			MaximumRent, 
+			Deposit, 
+			ApplyOnlineURL, 
+			UnitImageURLs, 
+			Specials, 
+			Amenities, 
+			AvailableDate, 
+			UnitPDF,
+			f.FileName
+			FROM wp_dc_aptavail as a
+				LEFT JOIN wp_dc_unit_files as f 
+					ON a.ApartmentName = f.ApartmentName
+			ORDER BY a.ApartmentName";
 		$units = $wpdb->get_results( $unit_qry, OBJECT );
 		// var_dump( $units );
 		return $units;
 	}
 
+	public function dc_get_units_ajax(){
+		include DORANCAFE_PATH . 'admin/partials/unit-table.php';
+	}
+
 	public function dc_create_upload_form(  ){
-		$form_id = $_POST['form_id'];
-		if ( $form_id ) {
+		$unit_id = $_POST['unit_id'];
+		$unit_num = $_POST['unit_num'];
+		if ( $unit_id ) {
 			$form_options = array(
-				'id' => 'dc_schedule_form_' . $form_id,
+				'id' => 'dc_schedule_form_' . $unit_id,
 				'post_id' => 'options',
 				'new_post' => false,
 				'uploader' => 'wp',
@@ -273,14 +330,27 @@ class DoranCafe_Admin {
 			$unit_pdf_url = wp_get_attachment_url( $unit_pdf );
 			if ( $unit_pdf_url ) {
 				$apt_id = $_POST['acf']['field_5c085ee2c814f']; // apt_id
+				$apt_num = $_POST['acf']['field_5c34e9d3d0ece'];; //apt_num
 				global $wpdb;
-				$tbl_name  = $wpdb->prefix . 'dc_aptavail';
-				$wpdb->query( 
-					$wpdb->prepare("UPDATE `${tbl_name}`
-					SET UnitPDF = %s 
-					WHERE AptAvailTblId = %s" , $unit_pdf_url, $apt_id)
-				);
+				$tbl_name  = $wpdb->prefix . 'dc_unit_files';
+
+				$delete = $wpdb->query('DELETE FROM ' . $tbl_name . ' WHERE ApartmentName =' . $apt_num ); // delete existing
+
+				$wpdb->insert($tbl_name, array( // insert new
+					"ApartmentName" 	=> $apt_num,
+					"FileName" 			=> $unit_pdf_url
+				));
 			}
+		}
+
+	}
+
+	public function get_updated_date(){
+		$path_to_file = DORANCAFE_PATH . 'rentcafe_data/aptavail/';
+		$files = scandir( $path_to_file, SCANDIR_SORT_DESCENDING );
+		$newest_file = $path_to_file . $files[0];
+		if (file_exists($newest_file)) {
+			echo date ("F d Y H:i:s", filemtime($newest_file));
 		}
 	}
 

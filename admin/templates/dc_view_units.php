@@ -12,20 +12,25 @@ $dc_api_aptavail_url .= '&propertyid=' . get_field('property_id', 'options');
 $dc_api_floorplan_url = get_field('rentcafe_api_endpoint', 'options') . '?requestType=floorplan';
 $dc_api_floorplan_url .= '&companyCode=' . get_field('company_code', 'options');
 $dc_api_floorplan_url .= '&propertyid=' . get_field('property_id', 'options');
+
+$dc_admin_class = new DoranCafe_Admin( 'DORANCAFE_PLUGIN', '1.0.0-alpha' );
+
 ?>
 
 
 <div class="container">
 
 	<div class="row">
-		<div class="col-md-9">
-			<h2>View Units</h2>
+		<div class="col-md-8">
+			<h2>View Units  
+				<span class="last-updated">last updated: <?php echo $dc_admin_class->get_updated_date(); ?></span>
+			</h2>
 		</div>
-		<div class="col-md-3">
-			<form action="" id="api_get_units" style="width: 100%;">
+		<div class="col-md-4">
+			<form action="" id="api_get_units" style="float: right;">
 				<input type="hidden" id="api_url_floorplan" value="<?php echo $dc_api_floorplan_url; ?>" style="width: 100%;">
 				<input type="hidden" id="api_url_aptavail" style="width: 100%;" value="<?php echo $dc_api_aptavail_url; ?>">
-				<button class="get-data">Refresh unit data from RentCafe</button>
+				<button class="get-data">Refresh unit data from RentCafe <i class="fas fa-file-import"></i></button>
 				<!-- 
 				https://api.rentcafe.com/rentcafeapi.aspx?requestType=apartmentAvailability&companyCode=c00000075513&propertyid=846708&sortOrder=apartmentName
 				<div class="row">
@@ -41,6 +46,17 @@ $dc_api_floorplan_url .= '&propertyid=' . get_field('property_id', 'options');
 		</div>
 	</div>
 	
+	<div class="unit-table-container">
+		<div class="lds-ring-wrapper" style="display: none;">
+			<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+		</div>
+		<div class="unit-table-wrapper">
+			<?php include DORANCAFE_PATH . 'admin/partials/unit-table.php'; ?>
+		</div>
+	</div>
+<?php 
+	
+/*
 
 
 	<div class="row">
@@ -91,3 +107,4 @@ $dc_api_floorplan_url .= '&propertyid=' . get_field('property_id', 'options');
 		<div class="modal-form-wrapper">Form Goes Here</div>
 	</div>
 </div>
+*/ ?>
