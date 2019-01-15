@@ -1,17 +1,14 @@
 /*
  *  Module: api_services
  */
-
-//var $ 			= require('jquery');
-
-
+var $ 			= require('jquery');
 
 /**
  * Initialize api_services
  */
-function init() {
+function dc_init() {
 	
-	console.log('api_services ready');
+	// console.log('api_services ready');
 
 	var $the_form 	= $('#api_get_units');
 	var the_table 	= $('.units-table');
@@ -23,28 +20,20 @@ function init() {
 		thisBtn.attr('disabled','disabled');
 		$('.lds-ring-wrapper').show();
 		the_table.remove();
-		var url_floorplan = $the_form.find('input#api_url_floorplan').val();
 		var url_aptavail = $the_form.find('input#api_url_aptavail').val();
-		if ( url_floorplan == '' ) {
-			api_services_error( $the_form, 'Floorplan URL required');
-		} else if ( url_aptavail == '' ) {
-			api_services_error( $the_form, 'AptAvail URL required');
+		if ( url_aptavail == '' ) {
+			dc_api_services_error( $the_form, 'AptAvail URL required');
 		} else {
-
-			// console.log( 'value ' + $the_form.find('input#api_url_aptavail').val() );
-			var note = $('#notifications');
-			note.empty();
 
 			$.ajax({
 				url : urls.ajax,
 				type : 'post',
 				data : {
 					action : 'dc_get_unit_data',
-					api_url_floorplan: url_floorplan,
 					api_url_aptavail: url_aptavail
 				},
 				success : function( response ) {
-					console.log('success');
+					// console.log('success');
 					$.ajax({
 						url : urls.ajax,
 						type : 'get',
@@ -56,15 +45,11 @@ function init() {
 							$('.lds-ring-wrapper').hide(); // hide loader 
 							$the_table_wrapper.html( response );
 						}
-					});
-					
+					});					
 				},
 				error : function( data, status ) {
-					console.log('data.responseText: ' & data.responseText);
-					console.log('status: ' & status);
-					note.fadeIn('fast', function(){
-						$(this).append(data.responseText);
-					});
+					// console.log('data.responseText: ' & data.responseText);
+					// console.log('status: ' & status);
 				}
 			});
 		}
@@ -72,18 +57,15 @@ function init() {
 
 };
 
-function api_services_error( frm, err ) {
-	console.log(err);
+function dc_api_services_error( frm, err ) {
+	//console.log(err);
 };
 
-function api_save_data(){
-
-}
 
 /**
  * Public API
  * @type {Object}
  */
 module.exports = {
-	init: init
+	dc_init: dc_init
 };

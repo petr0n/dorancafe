@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* =================================================================================
 App
 ================================================================================= */
@@ -28,8 +27,17 @@ App
 .dc-clear-filter {
   width: 100%;
   text-align: center; }
+  .dc-clear-filter a.clear_filter {
+    background-color: #a08f6a;
+    color: white;
+    padding: 5px 15px; }
+    .dc-clear-filter a.clear_filter:hover {
+      border: 1px solid #a08f6a;
+      background-color: white;
+      color: #a08f6a;
+      text-decoration: none; }
 
-.dc-form-row {
+#dc_search_form .dc-form-row {
   width: 100%;
   display: -webkit-box;
   display: -webkit-flex;
@@ -40,27 +48,25 @@ App
   -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center; }
-  .dc-form-row label {
+  #dc_search_form .dc-form-row label {
     width: 40%;
     text-align: right;
     padding-right: 10px; }
-  .dc-form-row .dc-form-element {
+  #dc_search_form .dc-form-row .dc-form-element {
     width: 60%; }
-    .dc-form-row .dc-form-element input[type="input"], .dc-form-row .dc-form-element select {
+    #dc_search_form .dc-form-row .dc-form-element input[type="input"], #dc_search_form .dc-form-row .dc-form-element select {
       border: 1px solid #a08f6a;
       border-radius: 2px;
       -webkit-appearance: none;
-      padding: 13px;
+      padding: 7px;
       width: 100%; }
-    .dc-form-row .dc-form-element input[type="checkbox"] {
+    #dc_search_form .dc-form-row .dc-form-element input[type="checkbox"] {
       width: auto; }
-    .dc-form-row .dc-form-element select {
-      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAANCAYAAAC+ct6XAAAAGXRFW…IsJTc7FQAxDxD7AbEzEF+jR1DDywtoCr9DbhwzDlRZDRBgACYqHJO9bkklAAAAAElFTkSuQmCC);
-      background-position: center right;
-      background-repeat: no-repeat; }
-  .dc-form-row.dc-form-check .dc-form-element {
+    #dc_search_form .dc-form-row .dc-form-element select {
+      margin: 0; }
+  #dc_search_form .dc-form-row.dc-form-check .dc-form-element {
     width: auto; }
-  .dc-form-row.dc-form-check label {
+  #dc_search_form .dc-form-row.dc-form-check label {
     text-align: left;
     width: auto;
     padding-left: 10px; }
@@ -73,14 +79,17 @@ App
   .dc-form-footer .left-col,
   .dc-form-footer .right-col {
     width: 50%; }
-  .dc-form-footer .right-col .sort {
-    float: right; }
+  .dc-form-footer .left-col .display-count-wrapper {
+    width: 130px; }
+  .dc-form-footer .right-col .sort-wrapper {
+    float: right;
+    width: 150px; }
 
-.dc-search-results .dc-viewing {
+.dc_search-results .dc_viewing {
   text-align: center;
   font-style: italic; }
 
-.dc-search-results .dc-results {
+.dc_search-results .dc_results {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -98,26 +107,32 @@ App
   -ms-flex-pack: space-evenly;
   justify-content: space-evenly;
   text-align: left; }
-  .dc-search-results .dc-results .unit {
+  .dc_search-results .dc_results .dc_unit {
     border: 1px solid #FFF;
     color: black;
-    width: 30%;
     height: auto;
-    margin-bottom: 1.2em; }
-    .dc-search-results .dc-results .unit .unit--img {
-      width: 80%; }
-      .dc-search-results .dc-results .unit .unit--img img {
-        max-width: 100%; }
-    .dc-search-results .dc-results .unit .bottom-bar {
+    margin-bottom: 1.2em;
+    width: 30%; }
+    .dc_search-results .dc_results .dc_unit .dc_unit-inner {
+      padding: 30px; }
+      .dc_search-results .dc_results .dc_unit .dc_unit-inner .dc_unit--img {
+        width: 80%; }
+        .dc_search-results .dc_results .dc_unit .dc_unit-inner .dc_unit--img img {
+          max-width: 100%; }
+    .dc_search-results .dc_results .dc_unit .dc_bottom-bar {
       background: none;
       height: 10px;
       width: 100%; }
-    .dc-search-results .dc-results .unit:hover {
+    .dc_search-results .dc_results .dc_unit:hover {
       border: 1px solid #E8E8E8;
       text-decoration: none; }
-      .dc-search-results .dc-results .unit:hover .bottom-bar {
+      .dc_search-results .dc_results .dc_unit:hover .dc_bottom-bar {
         background: -webkit-linear-gradient(0deg, #A08F6A 0%, #7DB5B0 100%) no-repeat 50% 50%/100% 100%;
         background: linear-gradient(90deg, #A08F6A 0%, #7DB5B0 100%) no-repeat 50% 50%/100% 100%; }
+
+.dc_pagination .dc_pagination-inner {
+  margin: 0 auto;
+  width: 200px; }
 
 form input[type="checkbox"] {
   margin: 9px; }

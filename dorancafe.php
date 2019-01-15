@@ -8,7 +8,7 @@
  * Text Domain:       petron
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * GitHub Plugin URI: https://github.com/2Fwebd/feedier-wordpress
+ * GitHub Plugin URI: https://github.com/petr0n/dorancafe
 
  db user: doranCafeUzr
  db pass: Progress-Likely-Fame-Madden-0
@@ -16,28 +16,16 @@
  admin user: mon3yAdm1nUzr
  admin pass: rFA2g2EZ4lt(NO!r0*
 
-
-plugin process flow
-
-1. When user hits dorancafe home -> Are dorancafe base settings entered e.g. propId, name etc.
-	a. Yes, display main plugin page -> 
-	b. No, show settings page and force set up -> enter propId, name etc. -> once complete take user to plugin home
-2. Dorancafe home
-	a. Do quick data get
-	b. view/edit data get schedule
-	c. view apt data
-	d. edit settingss
-
  */
  
 
-
- // If this file is called directly, abort.
+ 
+// If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-
+// var_dump($_SERVER['REQUEST_URI']);
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
@@ -60,7 +48,6 @@ if(!defined('DORANCAFE_PATH'))
  * This action is documented in includes/class-dorancafe-activator.php
  */
 function activate_dorancafe() {
-	dc_log_me( 'activate_dorancafe started' );
 	require_once DORANCAFE_PATH . 'includes/dc_class_activator.php';
 	DoranCafe_Activator::activate();
 }
@@ -78,8 +65,6 @@ register_activation_hook( __FILE__, 'activate_dorancafe' );
 register_deactivation_hook( __FILE__, 'deactivate_dorancafe' );
 
 
-
-
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
@@ -90,15 +75,23 @@ require DORANCAFE_PATH . 'includes/dc_class_dorancafe.php';
 /*
  * utils functions
  */
-require DORANCAFE_PATH . 'includes/dc_utils.php';
+// require DORANCAFE_PATH . 'includes/dc_utils.php';
 
 
-/*
- * acf fields
+
+/**
+ * Begins execution of the plugin.
+ *
+ * Since everything within the plugin is registered via hooks,
+ * then kicking off the plugin from this point in the file does
+ * not affect the page life cycle.
+ *
+ * @since    1.0.0
  */
-// define( 'ACF_LITE', true );
-//require DORANCAFE_PATH . 'includes/dc_fields_site_options.php';
+function run_dorancafe() {
 
+	$plugin = new Dorancafe();
+	$plugin->run();
 
-
-
+}
+run_dorancafe();

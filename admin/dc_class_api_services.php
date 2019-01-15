@@ -1,13 +1,7 @@
 <?php 
-/* used to make api calls 
-
-
-	1. get data from rentcafe
-	2. save data to file
-	3. read file and loop through nodes to insert data into db
-	
+/* 
+ * used to make api calls 	
 */
-
 
 
 class DoranCafe_API_Services
@@ -19,9 +13,6 @@ class DoranCafe_API_Services
 	 */
 	public function __construct()
 	{
-		
-		// add_action('wp_ajax_nopriv_dc_get_unit_data', array( $this, 'dc_get_unit_data'));
-		// add_action( 'wp_ajax_dc_get_unit_data', array( $this, 'dc_get_unit_data'));
 	}
 
 	public function dc_get_settings() {
@@ -65,9 +56,9 @@ class DoranCafe_API_Services
 		$settings = $this->dc_get_settings();
 		if ( $settings[0]->EndpointUrl ) {
 
-			$get_api_aptavail_url = get_field('rentcafe_api_endpoint', 'options') . '?requestType=apartmentAvailability&sortOrder=apartmentName';
-			$get_api_aptavail_url .= '&companyCode=' . get_field('company_code', 'options');
-			$get_api_aptavail_url .= '&propertyid=' . get_field('property_id', 'options');
+			// $get_api_aptavail_url = get_field('rentcafe_api_endpoint', 'options') . '?requestType=apartmentAvailability&sortOrder=apartmentName';
+			// $get_api_aptavail_url .= '&companyCode=' . get_field('company_code', 'options');
+			// $get_api_aptavail_url .= '&propertyid=' . get_field('property_id', 'options');
 			$get_api_aptavail_url = $settings[0]->EndpointUrl;
 			
 			// $api_url_aptavail = $_POST['api_url_aptavail'] ? $_POST['api_url_aptavail'] : $get_api_aptavail_url;
@@ -75,7 +66,7 @@ class DoranCafe_API_Services
 			$request_aptavail = wp_remote_get( $api_url_aptavail );
 
 			if( is_wp_error( $request_aptavail )) {
-				dc_log_me( 'Uh Oh! wp_remote_get on "request_aptavail" error' );
+				// dc_log_me( 'Uh Oh! wp_remote_get on "request_aptavail" error' );
 				return false; // Bail early
 			}
 			
@@ -100,47 +91,45 @@ class DoranCafe_API_Services
 		$today = date('YmdHis');
 		$filepath_to_save = DORANCAFE_PATH . 'rentcafe_data/' . $filename . '/' . $filename . '_' . $today . '.txt';
 		file_put_contents( $filepath_to_save, $data_to_save);
-		dc_log_me( 'dc_' . $filename . '_' . $today . '.txt' );
+		// dc_log_me( 'dc_' . $filename . '_' . $today . '.txt' );
 	}
 
 
-
-
-	public function dc_insert_floorplan_data() {
-		$path_to_file = DORANCAFE_PATH . 'rentcafe_data/floorplan/';
-		$files = scandir( $path_to_file, SCANDIR_SORT_DESCENDING );
-		$newest_file = $files[0];
-		$floorplans_json = file_get_contents( $path_to_file . $newest_file );
-		$floorplans = json_decode( $floorplans_json );
-		if ( $floorplans ) { // file not blank
-			global $wpdb;
-			$tbl_name = $wpdb->prefix . 'dc_floorplans';
-			$delete = $wpdb->query('TRUNCATE TABLE ' . $tbl_name); //delete data first
-			foreach( $floorplans as $floorplan ) {
-				$wpdb->insert($tbl_name, array(
-					"PropertyId" 			=> $floorplan->PropertyId,
-					"FloorplanId"  			=> $floorplan->FloorplanId,
-					"FloorplanName" 		=> $floorplan->FloorplanName,
-					"Beds" 					=> $floorplan->Beds,
-					"Baths"					=> $floorplan->Baths,
-					"MinimumSQFT" 			=> $floorplan->MinimumSQFT,
-					"MaximumSQFT"			=> $floorplan->MaximumSQFT,
-					"MinimumRent" 			=> $floorplan->MinimumRent,
-					"MaximumRent"			=> $floorplan->MaximumRent,
-					"MinimumDeposit"		=> $floorplan->MinimumDeposit,
-					"MaximumDeposit"		=> $floorplan->MaximumDeposit,
-					"AvailableUnitsCount"	=> $floorplan->AvailableUnitsCount,
-					"AvailabilityURL"		=> $floorplan->AvailabilityURL,
-					"FloorplanImageURL"		=> $floorplan->FloorplanImageURL,
-					"FloorplanImageName"	=> $floorplan->FloorplanImageName,
-					"PropertyShowsSpecials"	=> $floorplan->PropertyShowsSpecials,
-					"FloorplanHasSpecials"	=> $floorplan->FloorplanHasSpecials,
-					"UnitTypeMapping" 		=> $floorplan->UnitTypeMapping
-				));
-			}
-		}
-		dc_log_me( 'floorplans data inserted' );
-	}
+	// public function dc_insert_floorplan_data() {
+	// 	$path_to_file = DORANCAFE_PATH . 'rentcafe_data/floorplan/';
+	// 	$files = scandir( $path_to_file, SCANDIR_SORT_DESCENDING );
+	// 	$newest_file = $files[0];
+	// 	$floorplans_json = file_get_contents( $path_to_file . $newest_file );
+	// 	$floorplans = json_decode( $floorplans_json );
+	// 	if ( $floorplans ) { // file not blank
+	// 		global $wpdb;
+	// 		$tbl_name = $wpdb->prefix . 'dc_floorplans';
+	// 		$delete = $wpdb->query('TRUNCATE TABLE ' . $tbl_name); //delete data first
+	// 		foreach( $floorplans as $floorplan ) {
+	// 			$wpdb->insert($tbl_name, array(
+	// 				"PropertyId" 			=> $floorplan->PropertyId,
+	// 				"FloorplanId"  			=> $floorplan->FloorplanId,
+	// 				"FloorplanName" 		=> $floorplan->FloorplanName,
+	// 				"Beds" 					=> $floorplan->Beds,
+	// 				"Baths"					=> $floorplan->Baths,
+	// 				"MinimumSQFT" 			=> $floorplan->MinimumSQFT,
+	// 				"MaximumSQFT"			=> $floorplan->MaximumSQFT,
+	// 				"MinimumRent" 			=> $floorplan->MinimumRent,
+	// 				"MaximumRent"			=> $floorplan->MaximumRent,
+	// 				"MinimumDeposit"		=> $floorplan->MinimumDeposit,
+	// 				"MaximumDeposit"		=> $floorplan->MaximumDeposit,
+	// 				"AvailableUnitsCount"	=> $floorplan->AvailableUnitsCount,
+	// 				"AvailabilityURL"		=> $floorplan->AvailabilityURL,
+	// 				"FloorplanImageURL"		=> $floorplan->FloorplanImageURL,
+	// 				"FloorplanImageName"	=> $floorplan->FloorplanImageName,
+	// 				"PropertyShowsSpecials"	=> $floorplan->PropertyShowsSpecials,
+	// 				"FloorplanHasSpecials"	=> $floorplan->FloorplanHasSpecials,
+	// 				"UnitTypeMapping" 		=> $floorplan->UnitTypeMapping
+	// 			));
+	// 		}
+	// 	}
+	// 	dc_log_me( 'floorplans data inserted' );
+	// }
 
 
 
@@ -178,9 +167,8 @@ class DoranCafe_API_Services
 				));
 			}
 		}
-		dc_log_me( 'aptavail data inserted' );
+		// dc_log_me( 'aptavail data inserted' );
 	}
-
 
 }
 

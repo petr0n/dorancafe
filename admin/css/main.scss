@@ -21,7 +21,7 @@ a {
 /***************************/
 /* The Modal */
 /***************************/
-.modal {
+.dc_modal {
 	display: none; /* Hidden by default */
 	position: fixed; /* Stay in place */
 	z-index: 1; /* Sit on top */
@@ -32,33 +32,33 @@ a {
 	overflow: auto; /* Enable scroll if needed */
 	background-color: rgb(0,0,0); /* Fallback color */
 	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
 
-/* Modal Content/Box */
-.modal-content {
-	background-color: #fefefe;
-	margin: 15% auto; /* 15% from the top and centered */
-	padding: 20px;
-	border: 1px solid #888;
-	width: 50%; /* Could be more or less, depending on screen size */
-	.modal-form-wrapper {
-		margin-top: 21px;
+	/* Modal Content/Box */
+	.dc_modal-content {
+		background-color: #fefefe;
+		margin: 15% auto; /* 15% from the top and centered */
+		padding: 20px;
+		border: 1px solid #888;
+		width: 50%; /* Could be more or less, depending on screen size */
+		.modal-form-wrapper {
+			margin-top: 21px;
+		}
 	}
-}
 
-/* The Close Button */
-.close {
-	color: #aaa;
-	float: right;
-	font-size: 28px;
-	font-weight: bold;
-}
+	/* The Close Button */
+	.dc_modal_close {
+		color: #aaa;
+		float: right;
+		font-size: 28px;
+		font-weight: bold;
+	}
 
-.close:hover,
-.close:focus {
-	color: black;
-	text-decoration: none;
-	cursor: pointer;
+	.dc_modal_close:hover,
+	.dc_modal_close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	}
 }
 
 
@@ -72,8 +72,8 @@ a {
 /***************************/
 /* Tabs */
 /***************************/
-.dc-tabs {
-	.tabs {
+.dc_tabs {
+	.dc_tabs {
 		border-bottom: 4px solid #555;
 		padding-bottom: 3px;
 		a {
@@ -91,7 +91,7 @@ a {
 			}
 		}
 	}
-	.tab-panels {
+	.dc_tab-panels {
 		div.panel {
 			display: none;	
 			&:first-of-type {
@@ -278,7 +278,7 @@ $headerDesc            : #e8e8e8; /* desaturate($headerAsc, 5%); */
 	}
 }
 
-.dc_settings_form {
+.dc_settings_form, .dc_pdf_form {
 	label {
 		display: block;
 		font-weight: bold;
@@ -296,8 +296,17 @@ $headerDesc            : #e8e8e8; /* desaturate($headerAsc, 5%); */
 			height: 28px;
 			&[name="EndpointUrl"] {
 				width: 100%;
-				
 			}
+		}
+		&.save {
+			border-top: 1px solid #ccc;
+			text-align: right
+		}
+		.dc_file_preview {
+			font-size: 1.1em;
+			font-weight: bold;
+			display: inline;
+			margin-left: 20px;
 		}
 	}
 }

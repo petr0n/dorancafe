@@ -2,19 +2,16 @@
  *  Main entry point
  */
 
-require('es5-shim');
+// require('es5-shim');
 
 var $               	= require('jquery');
-var search        		= require('./dc_public_search.js');
-// var schedule_services 	= require('./dc_schedule_services.js');
+var dc_search        	= require('./dc_public_search.js');
 
 
 /**
  * Initialize the app on DOM ready
  */
 $(function() {
-	search.init();
-	search.set_form_vals();
-	// api_services.init();
-	// schedule_services.init();
+	dc_search.dc_init();
+	dc_search.dc_set_form_vals();
 });

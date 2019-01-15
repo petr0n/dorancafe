@@ -1,5 +1,8 @@
 <?php
 
+
+namespace DoranCafePlugin;
+
 /**
  * Fired during plugin activation
  *
@@ -31,7 +34,7 @@ class DoranCafe_Activator {
 	 */
 	public static function activate() {
 
-		dc_log_me( 'DoranCafe_Activator started' );
+		// dc_log_me( 'DoranCafe_Activator started' );
 		// create tables if not exist
 		// self::dc_create_floorplan_table(); don't think this is needed
 		self::dc_create_aptavail_table();
@@ -77,7 +80,7 @@ class DoranCafe_Activator {
 			PRIMARY KEY (FloorplanTblId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		dc_log_me( 'dc_floorplans table created' );
+		// dc_log_me( 'dc_floorplans table created' );
 	}
 
 	private static function dc_create_settings_table() {
@@ -94,7 +97,7 @@ class DoranCafe_Activator {
 			PRIMARY KEY (SettingId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		dc_log_me( 'dc_settings table created' );
+		// dc_log_me( 'dc_settings table created' );
 	}
 
 
@@ -130,7 +133,7 @@ class DoranCafe_Activator {
 			PRIMARY KEY (AptAvailTblId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		dc_log_me( 'dc_aptavail table created' );
+		// dc_log_me( 'dc_aptavail table created' );
 	}
 
 
@@ -148,7 +151,7 @@ class DoranCafe_Activator {
 			PRIMARY KEY (UnitFilesId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		dc_log_me( 'dc_unit_files table created' );
+		// dc_log_me( 'dc_unit_files table created' );
 	}
 
 
@@ -168,7 +171,7 @@ class DoranCafe_Activator {
 			PRIMARY KEY (ScheduledJobTblId)
 		) $charset_collate;";
 		dbDelta( $sql );
-		dc_log_me( 'dc_scheduled_jobs table created' );
+		// dc_log_me( 'dc_scheduled_jobs table created' );
 	}
 
 }

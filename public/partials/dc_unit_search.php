@@ -1,5 +1,7 @@
 <?php 
 
+	
+	$qry_params = '';
 	if(count($_GET)) {
 
 		$url =  "//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
@@ -8,6 +10,8 @@
 		// var_dump( $query );
 	}
 	$dc_public = new DoranCafe_Public( 'DORANCAFE_PLUGIN', '1.0.0-alpha' );
+
+
 
  ?>
 
@@ -123,13 +127,13 @@
 				</div>
 				<div class="dc-form-row dc-form-check">
 					<div class="dc-form-element">
-						<input type="checkbox" name="feature4" value="balcony">
+						<input type="checkbox" name="feature4" value="terrace">
 					</div>
 					<label for="features4">Terrace</label>
 				</div>
 				<div class="dc-form-row dc-form-check">
 					<div class="dc-form-element">
-						<input type="checkbox" name="features5" value="Appliance">
+						<input type="checkbox" name="features5" value="appliance">
 					</div>
 					<label for="features5">Upgraded Appliance Package</label>
 				</div>
@@ -139,6 +143,35 @@
 			<a href="" class="clear_filter" id="clear_filter">Clear Filters</a>
 		</div>
 		<div class="dc-form-footer">
+			<div class="left-col">
+				<div class="display-count-wrapper">
+					<label for="display_count">Display</label>
+					<select name="display_count" id="display_count">
+						<option value="12" selected="selected">12</option>
+						<option value="24">24</option>
+						<option value="36">38</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="right-col">
+				<div class="sort-wrapper">
+					<label for="sort_by">Sort By</label>
+					<select name="sort_by" id="sort_by">
+						<option value="" selected="selected">-select-</option>
+						<option value="price_high">Price (highest)</option>
+						<option value="price_low">Price (lowest)</option>
+						<option value="size_high">Size (highest)</option>
+						<option value="size_low">Size (lowest)</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="dc_search-results"><?php 
+			$dc_public->dc_public_get_units( $qry_params ); ?>
+		</div>
+		
+		<!-- <div class="dc-form-footer">
 			<div class="left-col">
 				<label for="display_count">Display</label>
 				<select name="display_count" id="display_count">
@@ -160,32 +193,6 @@
 					</select>
 				</div>
 			</div>
-		</form>
-	</div>
-	<div class="dc-search-results"><?php 
-		$dc_public->dc_public_get_units( $qry_params ); ?>
-	</div>
-	<div class="dc-form-footer">
-		<div class="left-col">
-			<label for="display_count">Display</label>
-			<select name="display_count" id="display_count">
-				<option value="12" selected="selected">12</option>
-				<option value="24">24</option>
-				<option value="36">38</option>
-			</select>
-		</div>
-		
-		<div class="right-col">
-			<div class="sort">
-				<label for="sort_by">Sort By</label>
-				<select name="sort_by" id="sort_by">
-					<option value="" selected="selected">-select-</option>
-					<option value="price_high">Price (highest)</option>
-					<option value="price_low">Price (lowest)</option>
-					<option value="size_high">Size (highest)</option>
-					<option value="size_low">Size (lowest)</option>
-				</select>
-			</div>
-		</div>
+		</div> -->
 	</form>
 </div>

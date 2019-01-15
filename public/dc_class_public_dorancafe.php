@@ -43,7 +43,6 @@ class DoranCafe_Public {
 	 */
 	private $version;
 
-	private $dbs;
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -55,22 +54,20 @@ class DoranCafe_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
-		// get js and css
-		add_action('init', array( $this, 'dc_public_load_assets' ) );
-		add_shortcode('dorancafe', array( $this, 'dc_public_shortcode' ));
-
 		// $this->dc_public_get_units();
+
+		add_shortcode('dorancafe', array( $this, 'dc_public_shortcode' ));
 	}
+
+
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
 	 */
-	public function dc_public_load_assets() {
+	public function dc_enqueue_styles() {
 		wp_enqueue_style( $this->plugin_name, DORANCAFE_URL . 'public/dist/dc_public_app.css', array(), $this->version, 'all' );
-		wp_enqueue_script( $this->plugin_name, DORANCAFE_URL . 'public/dist/dc_public_app.js', array(), $this->version, false );
 	}
 
 	/**
@@ -78,123 +75,181 @@ class DoranCafe_Public {
 	 *
 	 * @since    1.0.0
 	 */
+	public function dc_enqueue_scripts() {
+		wp_enqueue_script( $this->plugin_name, DORANCAFE_URL . 'public/dist/dc_public_app.js', array( 'jquery' ), $this->version, false );
+	}
+
+
+	/**
+	 * Register the short code
+	 *
+	 * @since    1.0.0
+	 */
 	public function dc_public_shortcode() {
-		include_once( 'dc_searchform.php' );
+		ob_start();
+		include('dc_dorancafe.php');
+		return ob_get_clean();
+		// include( 'dc_dorancafe.php' );
 	}
 
 	public function dc_public_get_units( $search_args = array() ) {
-
-		$sort_by_arr = array (
-			'price_high' => 'MaximumRent ACS',
-			'price_low'  => 'MaximumRent DESC',
-			'size_high'  => 'SQFT ACS',
-			'size_low'  => 'SQFT DESC'
-		);
-
-		$offset_arg = ''; // default offet - pagination
 		$display_count_arg = 12; // default display_count
+		$offset_arg = ''; // default offet - pagination
+		if( $search_args ) {
+			$sort_by_arr = array (
+				'price_high' => 'MaximumRent ASC',
+				'price_low'  => 'MaximumRent DESC',
+				'size_high'  => 'SQFT ASC',
+				'size_low'  => 'SQFT DESC'
+			);
 
+			$sort_by_args = 'ORDER BY ApartmentName';
+			$args = '';
 
-		$sort_by_args = 'ORDER BY ApartmentName';
-		$args = '';
-
-		foreach ( $search_args as $key => $value ) {
-			if ( $value ) {
-				if ( $key == 'sort_by' ) {
-					$sort_by_args = 'ORDER BY ' . $sort_by_arr[$value] . ', ApartmentName';
-				} else if ( $key == 'price' ) {
-					$price_range = explode('_', $value);
-					$args .= '(MaximumRent > ' . $price_range[0] . ' AND MaximumRent < ' . $price_range[1] . ') AND ';
-				} else if ( $key == 'availability' ) {
-					$args .= 'AvailableDate < DATE(NOW()) AND ';
-				} else if ( $key == 'floor' ) {
-					$args .= "ApartmentName LIKE '" . intval($value) . "%' AND ";
-				} else if ( $key == 'unit_view' ) {
-					$args .= "Amenities LIKE '%" . $value . "%' AND ";
-				} else if ( $key == 'display_count' ) {
-					$display_count_arg = filter_var($value, FILTER_SANITIZE_STRING);
-				} else {
-					//$args .= $key . ' = "' . filter_var($value, FILTER_SANITIZE_STRING) . '" AND ';
+			foreach ( $search_args as $key => $value ) {
+				if ( $value ) {
+					if ( $key == 'sort_by' ) {
+						$sort_by_args = 'ORDER BY ' . $sort_by_arr[$value] . ', ApartmentName ASC';
+					} else if ( $key == 'price' ) {
+						$price_range = explode('_', $value);
+						$args .= '(MaximumRent > ' . $price_range[0] . ' AND MaximumRent < ' . $price_range[1] . ') AND ';
+					} else if ( $key == 'availability' ) {
+						$args .= 'AvailableDate < DATE(NOW()) AND ';
+					} else if ( $key == 'floor' ) {
+						$args .= "ApartmentName LIKE '" . intval($value) . "%' AND ";
+					} else if ( $key == 'unit_view' ) {
+						$args .= "Amenities LIKE '%" . $value . "%' AND ";
+					} else if ( strpos($key, 'feature') !== false ) {
+						$args .= "Amenities LIKE '%" . $value . "%' AND ";
+					} else if ( $key == 'display_count' ) {
+						$display_count_arg = filter_var($value, FILTER_SANITIZE_STRING);
+					} else {
+						$args .= $key . ' = "' . filter_var($value, FILTER_SANITIZE_STRING) . '" AND ';
+					}
 				}
 			}
+
+			// add search items
+			if ( count($search_args) ) {	
+				$args = 'WHERE ' . $args . '1=1 ';
+				$ct_args = $args;
+			}
+			
+			// add sorting
+			$args .= $sort_by_args;
+
+			// add record limit 
+			$offset_arg = $offset_arg != '' ? $offset_arg . ',' : '';
+			$args .= ' LIMIT ' . $offset_arg . $display_count_arg;
+
+
+
+			global $wpdb;
+			$tbl_name = $wpdb->prefix . 'dc_aptavail';
+			$unit_qry = 'SELECT * FROM ' . $tbl_name . ' ' . $args;
+			// $sql = $wpdb->prepare( $unit_qry, $tbl_name );
+
+			// var_dump($unit_qry);
+
+			$units = $wpdb->get_results( $unit_qry, OBJECT );
+
+			//get total counts
+			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name . ' ' . $ct_args;
+			$units_ct = $wpdb->get_var( $unit_ct_qry );
+
+			$display_count_arg = $display_count_arg > $units_ct ? $units_ct : $display_count_arg;
+
+		} else {
+
+			global $wpdb;
+			$tbl_name = $wpdb->prefix . 'dc_aptavail';
+			$unit_qry = 'SELECT * FROM ' . $tbl_name . ' LIMIT 12';
+			// $sql = $wpdb->prepare( $unit_qry, $tbl_name );
+
+			$units = $wpdb->get_results( $unit_qry, OBJECT );
+
+			//get total counts
+			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name;
+			$units_ct = $wpdb->get_var( $unit_ct_qry );
 		}
-
-		// add search items
-		if ( count($search_args) )
-			$args = 'WHERE ' . $args . '1=1 ';
 		
-		// add sorting
-		$args .= $sort_by_args;
-
-		// add record limit 
-		$offset_arg = $offset_arg != '' ? $offset_arg . ',' : '';
-		$args .= ' Limit ' . $offset_arg . $display_count_arg;
-
-		global $wpdb;
-		$tbl_name = $wpdb->prefix . 'dc_aptavail';
-		$unit_qry = 'SELECT * FROM ' . $tbl_name . ' ' . $args;
-
-		$sql = $wpdb->prepare( $unit_qry, $tbl_name );
-
-		$units = $wpdb->get_results( $sql, OBJECT );
-		
-		echo '<div class="dc-viewing">';
-		echo 'You are viewing units ' . ($offset_arg == '' ? 1 : $offset_arg) . '-' . $display_count_arg . ' of ' . $wpdb->num_rows . ' results';
-		echo '</div>';
-		echo '<div class="dc-results">';
+		if ( $units_ct != 0 ) {
+			echo '<div class="dc_viewing">';
+			$offset_arg = $offset_arg == '' ? 1 : $offset_arg;
+			echo 'You are viewing units ' . $offset_arg . ' - ' . $display_count_arg . ' of ' . $units_ct . ' results';
+			echo '</div>';
+		}
+		echo '<div class="dc_results">';
 		if ( $units ) { 
+			global $post;
+			$post_slug=$post->post_name;
 			foreach( $units as $unit ) : ?>
 			
-			<a class="unit" href="/unit/<?php echo $unit->ApartmentName; ?>">
-				<h3 class="unit--num">Unit # <?php echo $unit->ApartmentName; ?></h3>
-				<div class="unit--meta">
-					<div class="beds">Beds: <?php echo $unit->Beds; ?></div>
-					<div class="baths">Baths: <?php echo $unit->Baths; ?></div>
-					<div class="sqft">SQFT: <?php echo $unit->SQFT; ?></div>
-					<div class="sqft">SQFT: <?php echo $unit->SQFT; ?></div>
+			<a class="dc_unit" href="/<?php echo $post_slug; ?>/?unit=<?php echo $unit->ApartmentName; ?>">
+				<div class="dc_unit-inner">
+					<h3 class="dc_unit--num">Unit # <?php echo $unit->ApartmentName; ?></h3>
+					<div class="dc_unit--meta">
+						<div class="dc_beds">Beds: <?php echo $unit->Beds; ?></div>
+						<div class="dc_baths">Baths: <?php echo $unit->Baths; ?></div>
+						<div class="dc_sqft">SQFT: <?php echo $unit->SQFT; ?></div>
+					</div>
+					<div class="dc_unit--img">
+						<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>">
+					</div>
 				</div>
-				<div class="unit--img">
-					<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>">
-				</div>
-				<div class="bottom-bar"></div>
+				<div class="dc_bottom-bar"></div>
 			</a>
 		<?php
 			endforeach; 
-			/* ?>
-			<table width="100%">
-				<thead>
-					<tr>
-					<th></th>
-					<th>Unit#</th>
-					<th>Beds</th>
-					<th>Baths</th>
-					<th>Square Ft.</th>
-					<th>MaximumRent</th>
-					<th>Amenities</th>
-					<th>AvailableDate</th>
-					</tr>
-				</thead>
-				<tbody><?php 
-				foreach( $units as $unit ) :
-					// $amens = explode('^', $unit->Amenities);
-					echo '<tr>';
-					echo '<td><img src="' . $unit->UnitImageURLs . '" alt="Unit: ' . $unit->ApartmentName . '" width="100"></td>';
-					echo '<td>' . $unit->ApartmentName . '</td>';
-					echo '<td>' . $unit->Beds . '</td>';
-					echo '<td>' . $unit->Baths . '</td>';
-					echo '<td>' . $unit->SQFT . '</td>';
-					echo '<td>$' . $unit->MaximumRent . '</td>';
-					echo '<td>' . str_replace('^', ', ', $unit->Amenities) . '</td>';
-					echo '<td>' . $unit->AvailableDate . '</td>';
-					echo '</tr>';
-				endforeach;
-			echo '</tbody></table>';
-			*/
-			echo '</div>';
+			echo '</div>'; 
+			//var_dump($units_ct != $display_count_arg);
+			if ( $units_ct != 0 && $units_ct != $display_count_arg ) { ?>
+				<div class="dc_pagination inactive">
+					<div class="dc_pagination-inner"><?php 
+						if ($offset_arg > 1) { ?>
+							<a href="prev" class="prev">&laquo; Previous </a> |<?php 
+						} ?>
+						<a href="next" class="next">Next &raquo;</a>
+					</div>
+				</div><?php 
+			}
 		} else {
 			echo '<h3>No matches found.</h3>';
 		}
-		/*  */
+		
+	}
+
+	public function dc_public_get_unit_by_id( $unit ) {
+		global $wpdb;
+		$tbl_name = $wpdb->prefix . 'dc_aptavail';
+		$unit_qry = 'SELECT 
+			AptAvailTblId, 
+			PropertyId, 
+			VoyagerPropertyId, 
+			VoyagerPropertyCode, 
+			FloorplanId, 
+			FloorplanName, 
+			ApartmentId, 
+			a.ApartmentName as ApartmentName, 
+			Beds, 
+			Baths, 
+			SQFT, 
+			MinimumRent, 
+			MaximumRent, 
+			Deposit, 
+			ApplyOnlineURL, 
+			UnitImageURLs, 
+			Specials, 
+			Amenities, 
+			AvailableDate, 
+			UnitPDF,
+			f.FileName
+			FROM wp_dc_aptavail as a
+				LEFT JOIN wp_dc_unit_files as f 
+					ON a.ApartmentName = f.ApartmentName
+			WHERE a.ApartmentName = ' . $unit; 
+		$unit = $wpdb->get_results( $unit_qry, ARRAY_A );
+		return $unit;
 	}
 
 	public function dc_public_get_floorplans(){
@@ -206,4 +261,4 @@ class DoranCafe_Public {
 	}
 
 }
-$dorancafe_public = new DoranCafe_Public( 'DORANCAFE_PLUGIN', '1.0.0-alpha' );
+

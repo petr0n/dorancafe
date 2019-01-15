@@ -2,17 +2,15 @@
  *  Module: tablesorter
  */
 
-//var $ 				= require('jquery');
+var $ = require('jquery');
 require('./vendor/jquery.tablesorter.min');
 require('./vendor/jquery.tablesorter.widgets.min');
 
 /**
  * Initialize tablesorter
  */
-function init() {
+function dc_init() {
 	
-	console.log('tablesorter ready');
-
 	$('.unit-grid').tablesorter({
 		widgets: ['columns']
 	});
@@ -24,5 +22,5 @@ function init() {
  * @type {Object}
  */
 module.exports = {
-	init: init
+	dc_init: dc_init
 };
