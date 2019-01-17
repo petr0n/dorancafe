@@ -1,19 +1,13 @@
 <?php 
-
-	
 	$qry_params = '';
 	if(count($_GET)) {
-
 		$url =  "//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 		$parts = parse_url($url);
 		parse_str($parts['query'], $qry_params);
 		// var_dump( $query );
 	}
 	$dc_public = new DoranCafe_Public( 'DORANCAFE_PLUGIN', '1.0.0-alpha' );
-
-
-
- ?>
+?>
 
  <div class="dc-form-container">
 	<form action="" class="dc-search-form" id="dc_search_form">
@@ -106,7 +100,7 @@
 			</div>
 
 			<div class="right-col">
-				<h3>Additional Features</h3>
+				<h4>Additional Features</h4>
 				<div class="dc-form-row dc-form-check">
 					<div class="dc-form-element">
 						<input type="checkbox" name="feature1" value="balcony">
@@ -137,10 +131,10 @@
 					</div>
 					<label for="features5">Upgraded Appliance Package</label>
 				</div>
+				<div class="dc-clear-filter">
+					<a href="" class="clear_filter" id="clear_filter">Clear Filters</a>
+				</div>
 			</div>
-		</div>
-		<div class="dc-clear-filter">
-			<a href="" class="clear_filter" id="clear_filter">Clear Filters</a>
 		</div>
 		<div class="dc-form-footer">
 			<div class="left-col">
