@@ -9,12 +9,14 @@ var $ 				= require('jquery');
  */
 function dc_init() {
 
+
 	btn = $('body').find('a.dc_modal_trigger');
 	modal = $('.dc_modal');
 	btn.each(function(x){
 		var this_but = $(this);
 		var apt_num = $(this).data('apt_num');
 		this_but.on('click', function(e){
+			console.log('click attached');
 			e.preventDefault();			
 			// reset form fields
 			dc_clear_form();

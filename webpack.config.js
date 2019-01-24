@@ -30,5 +30,11 @@ module.exports = {
 				warnings: false
 			}
 		})
-	]
+	],
+
+	resolve: {
+		alias: {
+			'jquery': require.resolve('jquery'),
+		}
+	}
 };

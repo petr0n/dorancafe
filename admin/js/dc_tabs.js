@@ -9,7 +9,7 @@ var $ 				= require('jquery');
  */
 function dc_init() {
 	
-	dc_tabs = $('.dc_tabs a');
+	dc_tabs = $('.dc_tabs a.dc_tab');
 	dc_tabs.each(function(x){
 		$(this).on('click', function(e) {
 			var tab = $(this);

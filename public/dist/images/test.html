@@ -1,0 +1,80 @@
+<html>
+<head>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+
+<style type="text/css">
+area {
+  outline: none;
+}
+area:hover {
+    outline-color: orange;
+    border: 1px solid blue;
+}
+#myCanvas, img {
+  height: 540px;
+  width: 960px;
+}
+
+</style>
+</head>
+<body>
+<h1>Aria</h1>
+
+  <img src="aria-front.jpg" alt="" usemap="#Map" />
+  <map name="Map" id="Map">
+    <area target="" class="floor6" title="floor6" href="#" coords="108,228,106,213,176,178,199,177,266,144,297,146,390,127,416,134,547,123,706,131,757,143,893,148,891,191,792,189,649,180,495,177,356,183,285,194,255,191,177,206" shape="poly">
+
+    <area data-city="City 1" data-pop="Population 1" class="field" alt="" title="" href="#"  shape="poly" coords="74,175.64999389648437,106,169.64999389648437,95,128.64999389648437,164,111.64999389648437,164,99.64999389648437,191,71.64999389648437,289,164.64999389648437,227,222.64999389648437,196,238.64999389648437,101,262.6499938964844" />
+    <area data-city="City 2" data-pop="Population 2" alt="" title="" href="#" shape="poly" coords="233,331.64996337890625,255,261.6499938964844,238,233.64999389648437,200,242.64999389648437,101,264.6499938964844" />
+    <area data-city="City 3" data-pop="Population 3" alt="" title="" href="#" shape="poly" coords="261,193.64999389648437,277,212.64999389648437,268,220.64999389648437,253,224.64999389648437,248,235.64999389648437,218,237.64999389648437,207,237.64999389648437,242,220.64999389648437" />
+    <area data-city="City 4" data-pop="Population 4" alt="" title="" href="#" shape="poly" coords="314,288.64996337890625,321,272.64996337890625,339,265.6499938964844,341,251.64999389648437,355,255.64999389648437,361,241.64999389648437,349,238.64999389648437,326,198.64999389648437,332,223.64999389648437,322,215.64999389648437,309,211.64999389648437,307,220.64999389648437,291,217.64999389648437,274,221.64999389648437,255,226.64999389648437,251,246.64999389648437,258,262.6499938964844,256,272.64996337890625" />
+    <area data-city="City 5" data-pop="Population 5" alt="" title="" href="#" shape="poly" coords="403,315.64996337890625,422,253.64999389648437,415,251.64999389648437,404,257.6499938964844,383,245.64999389648437,375,247.64999389648437,363,241.64999389648437,358,257.6499938964844,344,253.64999389648437,343,267.6499938964844,325,276.64996337890625,319,288.64996337890625" />
+    <area data-city="City 6" data-pop="Population 6" alt="" title="" href="#" shape="poly" coords="374,308.64996337890625,254,271.64996337890625,232,334.64996337890625,352,388.64996337890625" />
+
+</map>
+<h1 id="city">Flamborough, Ontario</h1></br>
+<h2 id="pop">Population: 39,220</h2>
+
+<canvas id="myCanvas" style="border:1px dashed #FF0000;"></canvas>
+
+<script>
+$(document).on('click',$('area'),function(e){
+    $('#city').html( $(e.target).data('city') );
+    $('#pop').html( $(e.target).data('pop') );
+})
+
+$("area").click(function () {
+  var $input = $(this);
+  var obj = $input.attr("coords").split(',');
+  var poly = obj;
+  //alert(poly);
+  var canvas = document.getElementById('myCanvas');
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'rgba(255, 0, 0, .5)';
+
+  ctx.beginPath();
+  ctx.moveTo(poly[0], poly[1]);
+  for (item = 2; item < poly.length - 1; item += 2) {
+    ctx.lineTo(poly[item], poly[item + 1])
+  }
+
+  ctx.closePath();
+  ctx.fill();
+});
+
+//$('#myCanvas').css('width',$('img').css('width')).css('height',$('img').css('height')).css('background-image','url(' + $('img').attr('src') + ')');
+// $('#myCanvas').css('width','490px').css('height','495px');
+
+
+  // $(".floor6").on({
+  //     mouseenter: function () {
+        
+  //     },
+
+  //     mouseleave: function () {
+          
+  //     }
+  // });
+</script>
+</body>
+</html>

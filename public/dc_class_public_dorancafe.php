@@ -85,16 +85,26 @@ class DoranCafe_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function dc_public_shortcode() {
+	public function dc_public_shortcode($atts) {
+		extract(shortcode_atts(array(
+			'page' => 'search'
+		), $atts));
 		ob_start();
-		include('dc_dorancafe.php');
+		// include('dc_dorancafe.php');
+		echo '<div class="dc_wrapper">';
+		if( $page == 'unit') {
+			include('partials/dc_unit_show.php');
+		} else {
+			include('partials/dc_unit_search.php');
+		}
+		echo '</div>';
 		return ob_get_clean();
-		// include( 'dc_dorancafe.php' );
 	}
 
 	public function dc_public_get_units( $search_args = array() ) {
 		$display_count_arg = 12; // default display_count
-		$offset_arg = ''; // default offet - pagination
+		$offset_arg = $display_count_arg + 1; // default offet - pagination
+		$currPage = 1;
 		if( $search_args ) {
 			$sort_by_arr = array (
 				'price_high' => 'MaximumRent ASC',
@@ -102,7 +112,7 @@ class DoranCafe_Public {
 				'size_high'  => 'SQFT ASC',
 				'size_low'  => 'SQFT DESC'
 			);
-
+			$currPage = $_GET['nextPage'] > 1 ? $_GET['nextPage'] : $currPage;
 			$sort_by_args = 'ORDER BY ApartmentName';
 			$args = '';
 
@@ -123,8 +133,8 @@ class DoranCafe_Public {
 						$args .= "Amenities LIKE '%" . $value . "%' AND ";
 					} else if ( $key == 'display_count' ) {
 						$display_count_arg = filter_var($value, FILTER_SANITIZE_STRING);
-					} else {
-						$args .= $key . ' = "' . filter_var($value, FILTER_SANITIZE_STRING) . '" AND ';
+					// } else {
+					// 	$args .= $key . ' = "' . filter_var($value, FILTER_SANITIZE_STRING) . '" AND ';
 					}
 				}
 			}
@@ -167,6 +177,7 @@ class DoranCafe_Public {
 			// $sql = $wpdb->prepare( $unit_qry, $tbl_name );
 
 			$units = $wpdb->get_results( $unit_qry, OBJECT );
+			$offset_arg = 1;
 
 			//get total counts
 			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name;
@@ -175,7 +186,8 @@ class DoranCafe_Public {
 		
 		if ( $units_ct != 0 ) {
 			echo '<div class="dc_viewing">';
-			$offset_arg = $offset_arg == '' ? 1 : $offset_arg;
+			$offset_arg = rtrim($offset_arg, ',');
+			$display_count_arg = $offset_arg > 1 ? $display_count_arg + $offset_arg : $display_count_arg;
 			echo 'You are viewing units ' . $offset_arg . ' - ' . $display_count_arg . ' of ' . $units_ct . ' results';
 			echo '</div>';
 		}
@@ -185,16 +197,18 @@ class DoranCafe_Public {
 			$post_slug=$post->post_name;
 			foreach( $units as $unit ) : ?>
 			
-			<a class="dc_unit" href="/<?php echo $post_slug; ?>/?unit=<?php echo $unit->ApartmentName; ?>">
+			<a class="dc_unit" href="/unit/<?php echo $unit->ApartmentName; ?>/">
 				<div class="dc_unit-inner">
 					<h3 class="dc_unit--num">Unit # <?php echo $unit->ApartmentName; ?></h3>
 					<div class="dc_unit--meta">
-						<div class="dc_beds">Beds: <?php echo $unit->Beds; ?></div>
-						<div class="dc_baths">Baths: <?php echo $unit->Baths; ?></div>
+						<div class="dc_beds">Beds: <?php echo $unit->Beds; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
+						<div class="dc_baths">Baths: <?php echo $unit->Baths; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 						<div class="dc_sqft">SQFT: <?php echo $unit->SQFT; ?></div>
 					</div>
 					<div class="dc_unit--img">
-						<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>">
+							<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>"> 
+						<!-- 
+						-->
 					</div>
 				</div>
 				<div class="dc_bottom-bar"></div>
@@ -202,14 +216,99 @@ class DoranCafe_Public {
 		<?php
 			endforeach; 
 			echo '</div>'; 
+
+			$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+	
+			// defaults 
+			$dc_baseUrl = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+			$baseUrl = $dc_baseUrl . '?';
+			if ($_GET)
+				$baseUrl = strtok($dc_baseUrl, '?') . '?';
+
+			// $nextPage = 'nextPage=' . ($currPage + 1);
+			// $offsetBy = '$offsetBy=' . rtrim($offset_arg, ',');
+			$baseNextParams = '';
+			$basePrevParams = '';
+
+
+			// next 
+			if (isset($_GET['nextPage'])) {
+				$baseNextParams = $this->querystring($_SERVER['QUERY_STRING'], array('nextPage'), array('nextPage'=>($_GET['nextPage'] + 1)) );
+			} else {
+				$baseNextParams = 'nextPage=2';
+			}
+			// offset 
+			if (isset($_GET['offsetBy'])) {
+				if ($baseNextParams == '') 
+					$baseNextParams = $_SERVER['QUERY_STRING'];
+				$baseNextParams = $this->querystring($baseNextParams, array('offsetBy'), array('offsetBy'=> $_GET['offsetBy'] ) );
+			} else {
+				$baseNextParams = $baseNextParams . '&offsetBy=' . $offset_arg;
+			}
+
+			// previous 
+			if (isset($_GET['prevPage'])) {
+				$prevPage = $currPage - 1;
+				if ($prevPage >= 0) {
+
+				}
+				if ($basePrevParams == '') 
+					$basePrevParams = $_SERVER['QUERY_STRING'];
+				$basePrevParams = $this->querystring($basePrevParams, array('prevPage'), array('prevPage'=> $currPage - 1 ) );
+				// echo '<br>';
+				// echo 'offsetBy is set ($baseParams): ' . $baseParams;
+			} else {
+				if ($_SERVER['QUERY_STRING']) {
+					$basePrevParams =  $_SERVER['QUERY_STRING'] . '&prevPage=1';
+				} else {
+					$basePrevParams = '&prevPage=1';
+				}
+			}
+			$nextUrl = $baseUrl . $baseNextParams;
+			$prevUrl = $baseUrl . $basePrevParams;
+
+
+			// echo '<hr>';
+			// echo '<br>';
+			// echo 'display_count_arg: ' . $display_count_arg;
+			// echo '<br>';
+			// echo 'offsetBy: ' . $offsetBy;
+			// echo '<br>';
+			// echo 'currPage: ' . $currPage;
+			// echo '<br>';
+			// echo 'nextPage: ' . $nextPage;
+			// echo '<br>';
+			// echo '$baseParams: ' . $baseParams;
+			// echo '<br>';
+			//echo '$this->removeParam(offsetBy): ' . $this->removeParam('offsetBy');
+			// echo '<br>';
+			// echo 'nextUrl: ' . $nextUrl;
+			// echo '<br>'; 
+			// echo 'prevUrl: ' . $prevUrl;
+			// echo '<br>'; 
+			
+			// echo 'total remaining: ' . $units_ct - ($offset_arg - )
 			//var_dump($units_ct != $display_count_arg);
+/*
+
+display_ct = 12
+offset = 12
+total = 27
+
+start = 13
+
+hasNext = true
+
+
+*/
+
 			if ( $units_ct != 0 && $units_ct != $display_count_arg ) { ?>
 				<div class="dc_pagination inactive">
 					<div class="dc_pagination-inner"><?php 
-						if ($offset_arg > 1) { ?>
-							<a href="prev" class="prev">&laquo; Previous </a> |<?php 
-						} ?>
-						<a href="next" class="next">Next &raquo;</a>
+						if ($currPage > 1) : ?>
+							<a href="<?php echo $prevUrl; ?>" class="dc_btn prev">&laquo; Previous </a>&nbsp;&nbsp;&nbsp;<?php 
+						endif; ?>
+						<a href="<?php echo $nextUrl; ?>" class="dc_btn next">Next &raquo;</a>
 					</div>
 				</div><?php 
 			}
@@ -217,6 +316,12 @@ class DoranCafe_Public {
 			echo '<h3>No matches found.</h3>';
 		}
 		
+	}
+	function querystring($strQS, $arRemove, $arAdd = NULL) {
+		parse_str($strQS, $arQS);
+		$arQS = array_diff_key($arQS, array_flip($arRemove));
+		$arQS = $arQS + $arAdd;
+		return http_build_query($arQS);
 	}
 
 	public function dc_public_get_unit_by_id( $unit ) {

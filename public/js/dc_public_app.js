@@ -14,4 +14,5 @@ var dc_search        	= require('./dc_public_search.js');
 $(function() {
 	dc_search.dc_init();
 	dc_search.dc_set_form_vals();
+	dc_search.dc_build_map();
 });

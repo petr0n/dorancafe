@@ -146,8 +146,8 @@ class DoranCafe_Admin {
 			<div class="row">
 				<div class="col-md-12">
 					<div class="dc_tabs">
-						<a href="dc_view-units" class="active">View Units <i class="fas fa-table"></i></a>
-						<a href="dc_settings">Plugin Settings <i class="fas fa-cogs"></i></a>
+						<a href="dc_view-units" class="dc_tab active">View Units <i class="fas fa-table"></i></a>
+						<a href="dc_settings" class="dc_tab">Plugin Settings <i class="fas fa-cogs"></i></a>
 					</div>
 					<div class="dc_tab-panels">
 						<div class="dc_view-units panel"><?php 

@@ -34,7 +34,7 @@ function dc_init() {
 				if (key !== undefined)
 					url_params += key + '=' + all_vars[key] + '&';
 			});
-			window.location.href = url + '?' + url_params;
+			window.location.href = url + '?' + url_params + '#dc_search_form';
 		});
 
 	});
@@ -78,6 +78,20 @@ function dc_get_url_vars() {
 	return vars;
 }
 
+	
+
+
+function dc_build_map() {
+	console.log('dd');
+	$dc_map = $('#dc_img-map');
+	floor6 = $dc_map.find('.floor6');
+
+	floor6.on('mouseover', function(){
+		$(this).css('border', '1px solid #000;z-index:999');
+	});
+}
+
+
 
 /**
  * Public API
@@ -85,5 +99,6 @@ function dc_get_url_vars() {
  */
 module.exports = {
 	dc_init: dc_init,
-	dc_set_form_vals: dc_set_form_vals
+	dc_set_form_vals: dc_set_form_vals,
+	dc_build_map: dc_build_map
 };
