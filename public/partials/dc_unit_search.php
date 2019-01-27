@@ -61,12 +61,11 @@
 					<div class="dc_form-element">
 						<select name="beds" id="beds">
 							<option value="" selected="selected">-select-</option>
-							<option value="0">Studio</option>
-							<option value="0">Alcove 1 BR</option>
-							<option value="1">Apartment 1 BR</option>
-							<option value="2">Apartment 2 BR</option>
-							<option value="3">Apartment 3 BR</option>
-							<option value="Townhome">Townhome 2 BR</option>
+							<option value="alcove">Alcove 1 BR</option>
+							<option value="1">1 BR</option>
+							<option value="2">2 BR</option>
+							<option value="3">3 BR</option>
+							<option value="Townhome">2 BR Townhome</option>
 						</select>
 					</div>
 				</div>
@@ -89,10 +88,10 @@
 					<div class="dc_form-element">
 						<select name="price" id="price">
 							<option value="" selected="selected">-select-</option>
-							<option value="1000_1500">1,000 - 1,500</option>
-							<option value="1500_2000">1,500 - 2,000</option>
-							<option value="2000_2500">2,000 - 2,500</option>
-							<option value="2500_3000">2,500 - 3,000</option>
+							<option value="1550_1750">$1,550-$1,750</option>
+							<option value="1751_2000">$1,751-$2,000</option>
+							<option value="2001_2500">$2,001-$2,500</option>
+							<option value="2501_3000">$2,501-$3,000</option>
 							<option value="3000plus">3000+</option>
 						</select>
 					</div> 
@@ -106,10 +105,8 @@
 						<select name="baths" id="baths">
 							<option value="" selected="selected">-select-</option>
 							<option value="1">1</option>
-							<option value="1.5">1.5</option>
 							<option value="2">2</option>
 							<option value="2.5">2.5</option>
-							<option value="3">3</option>
 						</select>
 					</div>
 				</div>
@@ -135,6 +132,7 @@
 							<option value="3">3</option>
 							<option value="4">4</option>
 							<option value="5">5</option>
+							<option value="6">6</option>
 						</select>
 					</div>
 				</div>
