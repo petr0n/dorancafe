@@ -4225,18 +4225,18 @@ readers do not read off random characters that represent icons */
   font-family: Barlow, HelveticaNeue, Helvetica, Arial, sans-serif; }
 
 .dc_wrapper .dc_image-search-wrapper {
-  text-align: center;
-  margin-bottom: 40px; }
-  .dc_wrapper .dc_image-search-wrapper map area {
-    border: 1px solid #ccc; }
-    .dc_wrapper .dc_image-search-wrapper map area:hover {
-      fill: rgba(92, 49, 94, 0.65) !important;
-      border: 1px solid #ccc; }
-  .dc_wrapper .dc_image-search-wrapper .dc_image-search {
-    margin: 0 auto;
+  height: 540px;
+  margin: 0 auto 40px;
+  width: 960px; }
+  .dc_wrapper .dc_image-search-wrapper svg {
+    height: 540px;
+    position: relative;
     width: 960px; }
-    .dc_wrapper .dc_image-search-wrapper .dc_image-search img {
-      max-width: 100%; }
+  .dc_wrapper .dc_image-search-wrapper .title {
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    position: absolute; }
 
 .dc_wrapper .dc_form-container h2.dc_page_title,
 .dc_wrapper .dc_unit-container h2.dc_page_title {
@@ -4477,6 +4477,64 @@ i.e-icon {
     font-family: 'entypo-fontello';
     position: absolute;
     left: 0; }
+
+#aria-floor-hovers {
+  position: relative; }
+  #aria-floor-hovers g.floor {
+    cursor: pointer;
+    fill: transparent; }
+    #aria-floor-hovers g.floor.even:hover {
+      fill: rgba(160, 143, 106, 0.7); }
+    #aria-floor-hovers g.floor.odd:hover {
+      fill: rgba(125, 181, 176, 0.7); }
+
+.floorplate path, .floorplate rect, .floorplate polygon {
+  fill: rgba(125, 181, 176, 0.4); }
+  .floorplate path:hover, .floorplate rect:hover, .floorplate polygon:hover {
+    fill: rgba(125, 181, 176, 0.7); }
+
+/***************************/
+/* The Modal */
+/***************************/
+.dc_modal {
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: black;
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+  /* Modal Content/Box */
+  /* The Close Button */ }
+  .dc_modal .dc_modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 960px;
+    /* Could be more or less, depending on screen size */ }
+    .dc_modal .dc_modal-content .modal-form-wrapper {
+      margin-top: 21px; }
+  .dc_modal .dc_modal_close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold; }
+  .dc_modal .dc_modal_close:hover,
+  .dc_modal .dc_modal_close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer; }
 
 @media screen and (max-width: 992px) {
   .dc_wrapper .dc_form-container .dc_form-wrapper-header {

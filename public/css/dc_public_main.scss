@@ -5,23 +5,22 @@ $brand-font: Barlow,HelveticaNeue,Helvetica,Arial,sans-serif;
 		font-family: $brand-font;
 	}
 	.dc_image-search-wrapper {
-		text-align: center;
-		margin-bottom: 40px;
-
-		map area {
-			border: 1px solid #ccc;
-			&:hover {
-				fill: rgba(92, 49, 94, 0.65) !important;
-				border: 1px solid #ccc;
-			}
-		}
-		.dc_image-search {
-			margin: 0 auto;
+		height: 540px;
+		margin: 0 auto 40px;
+		width: 960px;
+		svg {
+			height: 540px;
+			position: relative;
 			width: 960px;
-			img {
-				max-width: 100%;
-			}
 		}
+		.title {
+			// background-color: rgba(255, 255, 255, 0.7);
+			color: white;
+			font-weight: bold;
+			padding: 5px 10px;
+			position: absolute;
+		}
+
 	}
 	.dc_form-container, 
 	.dc_unit-container {
@@ -280,6 +279,75 @@ i.e-icon {
 		font-family: 'entypo-fontello';	
 		position: absolute;
 		left: 0;
+	}
+}
+
+
+#aria-floor-hovers {
+	position: relative;
+	g.floor {
+		cursor: pointer;
+		fill: transparent;
+		&.even:hover {
+			fill: rgba(160, 143, 106, .7);
+		}
+		&.odd:hover {
+			fill: rgba(125, 181, 176, .7);
+		}
+	}
+}
+
+
+.floorplate {
+	path, rect, polygon {
+		fill: rgba(125, 181, 176, .4);
+		&:hover {
+			fill: rgba(125, 181, 176, .7);
+		}
+	}
+}
+
+
+
+/***************************/
+/* The Modal */
+/***************************/
+.dc_modal {
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+
+	/* Modal Content/Box */
+	.dc_modal-content {
+		background-color: #fefefe;
+		margin: 15% auto; /* 15% from the top and centered */
+		padding: 20px;
+		border: 1px solid #888;
+		width: 960px; /* Could be more or less, depending on screen size */
+		.modal-form-wrapper {
+			margin-top: 21px;
+		}
+	}
+
+	/* The Close Button */
+	.dc_modal_close {
+		color: #aaa;
+		float: right;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+	.dc_modal_close:hover,
+	.dc_modal_close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
 	}
 }
 

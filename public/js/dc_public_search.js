@@ -70,13 +70,6 @@ function dc_set_form_vals(){
 		Object.keys(curr_vals).forEach(function(key) {
 			if (key !== undefined) {
 				var form_el = $("[name='" + key + "']");
-				// var el_type = '';
-				// if( form_el.length && form_el[0].nodeName.toLowerCase() == 'input' ) {
-				// 	el_type = form_el[0].nodeName.toLowerCase();
-				// } else {
-				// 	el_type = form_el.attr('type');
-				// }
-				// console.log('form_el.attr(type): ' + form_el.attr('type'));
 				if ( form_el.attr('type') == 'checkbox' ) {
 					$("input[name='" + key + "']").attr('checked','checked');
 				} else {
