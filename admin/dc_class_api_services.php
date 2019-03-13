@@ -154,7 +154,7 @@ class DoranCafe_API_Services
 					"ApartmentId"			=> $aptavail->ApartmentId,
 					"ApartmentName" 		=> $aptavail->ApartmentName,
 					"Beds" 					=> $aptavail->Beds,
-					"Baths"					=> $aptavail->Baths,
+					"Baths"					=> floatval($aptavail->Baths),
 					"SQFT"					=> $aptavail->SQFT,
 					"MinimumRent" 			=> $aptavail->MinimumRent,
 					"MaximumRent"			=> $aptavail->MaximumRent,
@@ -165,6 +165,7 @@ class DoranCafe_API_Services
 					"Amenities"				=> $aptavail->Amenities,
 					"AvailableDate"			=> $aptavail->AvailableDate
 				));
+				var_dump("Baths " .floatval($aptavail->Baths));
 			}
 		}
 		// dc_log_me( 'aptavail data inserted' );

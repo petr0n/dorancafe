@@ -63,7 +63,7 @@ class DoranCafe_Activator {
 			FloorplanId TEXT NOT NULL,
 			FloorplanName TEXT NOT NULL,
 			Beds INTEGER NOT NULL,
-			Baths TEXT NOT NULL,
+			Baths FLOAT(10,1) NOT NULL,
 			MinimumSQFT INTEGER NOT NULL,
 			MaximumSQFT INTEGER NOT NULL,
 			MinimumRent INTEGER NOT NULL,

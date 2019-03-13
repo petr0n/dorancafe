@@ -57,13 +57,7 @@ class DoranCafe_Public {
 		// $this->dc_public_get_units();
 
 		add_shortcode('dorancafe', array( $this, 'dc_public_shortcode' ));
-		add_action( 'parse_query', array( $this, 'dc_disable_page_redirect' ));
-
-	}
-
-	function dc_disable_page_redirect( $query ) {
-		if( 'search' == $query->query_vars['pagename'] )
-			remove_filter( 'template_redirect', 'redirect_canonical' );
+	
 	}
 
 	/**
@@ -92,13 +86,15 @@ class DoranCafe_Public {
 	 */
 	public function dc_public_shortcode($atts) {
 		extract(shortcode_atts(array(
-			'page' => 'search'
+			'dc_page' => 'search'
 		), $atts));
 		ob_start();
 		// include('dc_dorancafe.php');
 		echo '<div class="dc_wrapper">';
-		if( $page == 'unit') {
+		if( $dc_page == 'unit') {
 			include('partials/dc_unit_show.php');
+		} else if( $dc_page == 'restricted') {
+			include('partials/dc_unit_custom.php');
 		} else {
 			include('partials/dc_unit_search.php');
 		}
@@ -108,8 +104,8 @@ class DoranCafe_Public {
 
 	public function dc_public_get_units( $search_args = array() ) {
 		$display_count = isset($_GET['display_count']) ? $_GET['display_count'] : 12; 
-		$page = isset($_GET['page']) ? $_GET['page'] : 1;
-		$offset = $page == 1 ? 0 : ($page - 1) * $display_count; 
+		$dc_page = isset($_GET['dc_page']) ? $_GET['dc_page'] : 1;
+		$offset = $dc_page == 1 ? 0 : ($dc_page - 1) * $display_count; 
 
 		if( $search_args ) {
 			$sort_by_arr = array (
@@ -131,8 +127,8 @@ class DoranCafe_Public {
 						$args .= '(MaximumRent > ' . $price_range[0] . ' AND MaximumRent < ' . $price_range[1] . ') AND ';
 					} else if ( $key == 'availability' ) {
 						$args .= 'AvailableDate < DATE(NOW()) AND ';
-					} else if ( $key == 'floor' ) {
-						$args .= "ApartmentName LIKE '" . intval($value) . "%' AND ";
+					// } else if ( $key == 'floor' ) {
+					// 	$args .= "ApartmentName LIKE '" . intval($value) . "%' AND ";
 					} else if ( $key == 'floorplanname' ) {
 						$args .= "FloorplanName = '" . $value . "' AND ";
 					} else if ( $key == 'unit_view' ) {
@@ -142,33 +138,41 @@ class DoranCafe_Public {
 					} else if ( $key == 'display_count' ) {
 						$display_count_arg = filter_var($value, FILTER_SANITIZE_STRING);
 					} else if ( $key == 'beds' ) {
-						//var_dump($value);
 						if (is_numeric($value)) {
 							$args .= $key . ' = ' . $value . ' AND ';
 						} else {
-							if ($value == 'alcove') {
-								$args .= $key . ' = 0 AND ';
+							if ($value == 'studio') {
+								$args .= "Amenities LIKE '%studio%' AND ";
+							} else if ($value == 'alcove') {
+								$args .= "Amenities LIKE '%alcove%' AND ";	
 							} else if ($value == 'Townhome') {
-								$args .= "Amenities LIKE '%" . $value . "%' AND ";
+								$args .= "Amenities LIKE '%Townhome%' AND ";
 							}
 						}
-					} 
-					// else if ( !in_array($key, array('page', 'beds')) ) {
-					// 	if (is_numeric((int)$value)) {
-					// 		$args .= $key . ' = ' . $value . ' AND ';
-					// 	} else {
-					// 		$args .= $key . ' = "' . filter_var($value, FILTER_SANITIZE_STRING) . '" AND ';
-					// 	}
-					// }
+					} else if ( $key == 'baths' ) {
+						$args .= $key . ' = ' . filter_var($value, FILTER_SANITIZE_STRING) . ' AND ';
+					} else if ( $key == 'floor' ) {
+						$floor = '1st';
+						if ($value == 2) {
+							$floor = '2nd';
+						} else if ($value == 3) {
+							$floor = '3rd';
+						} else if ($value == 4 || $value == 5 || $value == 6) {
+							$floor = filter_var($value, FILTER_SANITIZE_STRING) + 'th';
+						}
+						$args .= 'Amenities LIKE "%' . $floor . ' Floor%" AND ';
+					}
 				}
 			}
 
+
 			// add search items
 			if ( count($search_args) ) {	
-				$args = 'WHERE ' . $args . '1=1 ';
+				// $args = 'WHERE ' . $args . '1=1 ';
+				$args = 'WHERE ' . $args . 'Amenities NOT LIKE "%Income Restricted%" ';
 				$ct_args = $args;
-			}
-			
+			} 
+
 			// add sorting
 			$args .= $sort_by_args;
 
@@ -182,9 +186,6 @@ class DoranCafe_Public {
 			global $wpdb;
 			$tbl_name = $wpdb->prefix . 'dc_aptavail';
 			$unit_qry = 'SELECT * FROM ' . $tbl_name . ' ' . $args;
-			// $sql = $wpdb->prepare( $unit_qry, $tbl_name );
-
-			//var_dump($unit_qry);
 
 			$units = $wpdb->get_results( $unit_qry, OBJECT );
 
@@ -192,31 +193,32 @@ class DoranCafe_Public {
 			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name . ' ' . $ct_args;
 			$units_ct = $wpdb->get_var( $unit_ct_qry );
 
-			// $display_count_arg = $display_count_arg > $units_ct ? $units_ct : $display_count_arg;
-
 		} else {
 
 			global $wpdb;
 			$tbl_name = $wpdb->prefix . 'dc_aptavail';
-			$unit_qry = 'SELECT * FROM ' . $tbl_name . ' LIMIT 12';
+
+			$unit_qry = 'SELECT * FROM ' . $tbl_name . ' WHERE Amenities NOT LIKE "%Income Restricted%" LIMIT 12';
 			// $sql = $wpdb->prepare( $unit_qry, $tbl_name );
 
 			$units = $wpdb->get_results( $unit_qry, OBJECT );
 			// $offset_arg = 1;
 
 			//get total counts
-			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name;
+			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name . ' WHERE Amenities NOT LIKE "%Income Restricted%"';
 			$units_ct = $wpdb->get_var( $unit_ct_qry );
 		}
 		
+		// var_dump($unit_qry);
+		
 		if ( $units_ct != 0 ) {
 			echo '<div class="dc_viewing">';
-			// $offset_arg = rtrim($offset_arg, ',');
-			// $start_num = $curr_page > 1 ? $display_count_arg + $offset_arg : 1;
-			// $display_count_arg = $start_num > 1 ? $display_count_arg + $offset_arg : $display_count_arg;
 			
 			$start_num = $offset == 0 ? 1 : $offset + 1;
 			$last_num = ($display_count + ($start_num - 1 ));
+
+			// if the unit_ct is less than last_num be last num
+			$last_num = $units_ct < $last_num ? $units_ct : $last_num;
 
 			echo 'You are viewing units ' . $start_num . ' - ' . $last_num . ' of ' . $units_ct . ' results';
 			echo '</div>';
@@ -232,13 +234,11 @@ class DoranCafe_Public {
 					<h3 class="dc_unit--num">Unit # <?php echo $unit->ApartmentName; ?></h3>
 					<div class="dc_unit--meta">
 						<div class="dc_beds">Beds: <?php echo $unit->Beds; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
-						<div class="dc_baths">Baths: <?php echo $unit->Baths; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
+						<div class="dc_baths">Baths: <?php echo floatval($unit->Baths); ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 						<div class="dc_sqft">SQFT: <?php echo $unit->SQFT; ?></div>
 					</div>
 					<div class="dc_unit--img">
-						<!-- 
-						-->
-							<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>"> 
+						<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>"> 
 					</div>
 				</div>
 				<div class="dc_bottom-bar"></div>
@@ -260,9 +260,9 @@ class DoranCafe_Public {
 			$next_params = '';
 			$prev_params = '';
 
-			// page 
-			$next_params = $this->dc_remove_url_param($dc_base_url, 'page');
-			$next_params .= isset($_GET['page']) ? '&page=' . ($_GET['page'] + 1) : '&page=2';
+			// dc_page 
+			$next_params = $this->dc_remove_url_param($dc_base_url, 'dc_page');
+			$next_params .= isset($_GET['dc_page']) ? '&dc_page=' . ($_GET['dc_page'] + 1) : '&dc_page=2';
 			
 
 			// echo '<hr>';
@@ -278,15 +278,15 @@ class DoranCafe_Public {
 			// echo 'next_params: ' . $next_params; 
 
 			// previous 
-			if ($page > 1) {
-				$prev_page = (int)$page - 1;
+			if ($dc_page > 1) {
+				$prev_page = (int)$dc_page - 1;
 				if ($_SERVER['QUERY_STRING']) {
 					$prev_params = $next_params;
-					$prev_params = $this->dc_remove_url_param($dc_base_url, 'page');
-					$prev_params = $prev_params . '&page=' . $prev_page;
+					$prev_params = $this->dc_remove_url_param($dc_base_url, 'dc_page');
+					$prev_params = $prev_params . '&dc_page=' . $prev_page;
 
 				} else {
-					$prev_params = 'page=' . $prev_page;
+					$prev_params = 'dc_page=' . $prev_page;
 				}
 			}
 
@@ -304,10 +304,12 @@ class DoranCafe_Public {
 			if ( $units_ct != 0 && $units_ct != $display_count ) { ?>
 				<div class="dc_pagination inactive">
 					<div class="dc_pagination-inner"><?php 
-						if ($page > 1) : ?>
+						if ($dc_page > 1) : ?>
 							<a href="<?php echo $prev_url; ?>" class="dc_btn prev">&laquo; Previous </a>&nbsp;&nbsp;&nbsp;<?php 
+						endif; 
+						if ($units_ct != $last_num) : ?>
+							<a href="<?php echo $next_url; ?>" class="dc_btn next">Next &raquo;</a><?php 
 						endif; ?>
-						<a href="<?php echo $next_url; ?>" class="dc_btn next">Next &raquo;</a>
 					</div>
 				</div><?php 
 			}
@@ -316,6 +318,56 @@ class DoranCafe_Public {
 		}
 		
 	}
+
+
+	public function dc_public_get_custom_units( ) {
+
+		global $wpdb;
+		$tbl_name = $wpdb->prefix . 'dc_aptavail';
+		$unit_qry = 'SELECT * FROM ' . $tbl_name;
+		$unit_qry .= ' WHERE Amenities LIKE "%Income Restricted%" ';
+
+		//var_dump($unit_qry);
+		$units = $wpdb->get_results( $unit_qry, OBJECT );
+
+		//get total counts
+		$units_ct = count($units);
+
+		if ( $units_ct != 0 ) {
+			echo '<div class="dc_viewing">';
+			echo 'You are viewing units ' . $units_ct;
+			echo '</div>';
+		}
+		echo '<div class="dc_results">';
+		if ( $units ) { 
+			global $post;
+			$post_slug=$post->post_name;
+			foreach( $units as $unit ) : 
+		
+				?>
+			
+			<a class="dc_unit" href="/unit/<?php echo $unit->ApartmentName; ?>/">
+				<div class="dc_unit-inner">
+					<h3 class="dc_unit--num">Unit # <?php echo $unit->ApartmentName; ?></h3>
+					<div class="dc_unit--meta">
+						<div class="dc_beds">Beds: <?php echo $unit->Beds; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
+						<div class="dc_baths">Baths: <?php echo $unit->Baths; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
+						<div class="dc_sqft">SQFT: <?php echo $unit->SQFT; ?></div>
+					</div>
+					<div class="dc_unit--img">
+							<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>"> 
+					</div>
+				</div>
+				<div class="dc_bottom-bar"></div>
+			</a><?php
+			
+			endforeach; 
+			echo '</div>'; 
+		} else {
+			echo '<h3>No matches found.</h3>';
+		}
+	}
+
 	function dc_remove_url_param($url, $param){
 		$my_url = parse_url($url);
 		if (array_key_exists('query', $my_url)) {
@@ -370,7 +422,7 @@ class DoranCafe_Public {
 	public function dc_public_get_floorplans(){
 		global $wpdb;
 		$tbl_name = $wpdb->prefix . 'dc_aptavail';
-		$fp_qry = 'SELECT FloorplanName FROM ' . $tbl_name . ' GROUP BY FloorplanName ORDER BY FloorplanName'; 
+		$fp_qry = 'SELECT FloorplanName FROM ' . $tbl_name . ' WHERE Amenities NOT LIKE "%Income Restricted%" GROUP BY FloorplanName ORDER BY FloorplanName'; 
 		$floorplans = $wpdb->get_results( $fp_qry, OBJECT );
 		return $floorplans;
 	}

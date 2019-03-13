@@ -17,7 +17,7 @@
 							<div class="dc_baths">Baths: <?php echo $dc_unit[0]['Baths']; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 							<div class="dc_sqft">SQFT: <?php echo $dc_unit[0]['SQFT']; ?></div>
 						</div>
-						<div class="dc_rent">Monthly Rent: <?php echo $dc_unit[0]['MaximumRent']; ?></div>
+						<div class="dc_rent">Monthly Rent: $<?php echo $dc_unit[0]['MaximumRent']; ?></div>
 						<hr>
 						<div class="dc_unit-amenities">
 							<ul><?php 
@@ -27,14 +27,14 @@
 							</ul>
 						</div>
 						<div class="btn-pdf-wrapper">
-							<a href="<?php echo $dc_unit[0]['FileName'] ?>" class="dc_btn btn-pdf">Download PDF</a>
+							
 						</div>
 					</div>
 					<div class="dc_right-col">
 						<div class="dc_link-bar">
 							<a href="<?php echo $dc_unit[0]['ApplyOnlineURL']; ?>" target="blank"><i class="fas fa-edit"></i> Apply Now</a>
 							<a href="/contact/"><i class="fas fa-question-circle"></i> Ask About Unit</a>
-							<a href="#" onClick="window.print()"><i class="fas fa-print"></i> Print</a>
+							<a target="blank" href="<?php echo $dc_unit[0]['FileName'] ?>" class="dc_btn btn-pdf"><i class="fas fa-print"></i> Download PDF</a>
 						</div>
 						<div class="dc_unit--img">
 							<img src="<?php echo $dc_unit[0]['UnitImageURLs']; ?>" alt="<?php echo $dc_unit[0]['ApartmentName']; ?>">

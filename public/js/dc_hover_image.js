@@ -26,10 +26,11 @@ var $ = require('jquery');
 				floor3: 87,
 				floor4: 90,
 				floor5: 95,
-				floor6: 120,
+				floor6: 120
 			}
+			console.log(myId);
 			r = floorEl.right - imgEl.right; 
-			t = (floorEl.top + positionArr[myId]) - imgEl.top; 
+			t = (floorEl.top + (positionArr[myId] + 5)) - imgEl.top;
 			b = floorEl.bottom - imgEl.bottom;
 			
 			// console.log('floorEl.top: ' + floorEl.top);

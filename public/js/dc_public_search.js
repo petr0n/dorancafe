@@ -19,34 +19,27 @@ function dc_init() {
 			var this_val = $(this).val();
 			var all_vars = dc_get_url_vars();
 			// remove page because it will force user to first record
-			delete all_vars['page'];
+			delete all_vars['dc_page'];
 			// delete all_vars['display_count'];
 			var url_params = '';
 			var url = window.location.href;
 			url = url.split('?')[0];
 
 			if ( all_vars[this_name] ) {
-				// console.log(); 
-				// console.log($('#' + all_vars[this_name]).is(':checked'));
 				if ( $(this).is(':checkbox') && 
 					!$(this).is(':checked') ) {
 					delete all_vars[this_name]; // delete it 
 					all_vars[this_name] = ''; // remove for checkbox
-					//console.log('checkbox fired');
 				} else {
 					delete all_vars[this_name]; // delete it 
 					all_vars[this_name] = this_val; // now re-add it
 				}
-				//console.log('all_vars[this_name]: ' + all_vars[this_name]);
 			} else {
-				//console.log(this_name + ' does NOT exist');
 				all_vars[this_name] = this_val;
 			}
 			
 			Object.keys(all_vars).forEach(function(key) {
 				if (key && all_vars[key]) {	
-					// console.log('key: ' + key);
-					// console.log('all_vars[key]: ' + all_vars[key]);
 					url_params += key + '=' + all_vars[key] + '&';
 				}
 			});

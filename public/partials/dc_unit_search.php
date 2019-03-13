@@ -13,13 +13,16 @@
  <div class="dc_form-container">
 	<h2 class="dc_page_title">SEARCH</h2>
 	<div class="dc_image-search-wrapper" id="dc_image-search-box">
-
+		<div class="dc_page_subtitle">
+			<h4>Click on a floor to view floor map</h4>
+			<p>or search apartments below</p>		
+		</div>
 		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 960 540" id="aria-floor-hovers">
 			<title>Aria Hover Map</title>
 			<g id="aria-front" data-name="aria-front">
-				<g id="aria-front-img" data-name="aria-front-img">
-					<image xlink:href="/wp-content/plugins/DoranCafe/public/dist/images/aria-front.jpg" />
-				</g>
+				<image xlink:href="/wp-content/plugins/DoranCafe/public/dist/images/aria-front.jpg" width="960" height="540" />
+				<!-- <g id="aria-front-img" data-name="aria-front-img">
+				</g> -->
 				<g id="floor1" class="floor even" data-display-name="Floor 1" data-modal="floorplate1">
 					<polygon points="85.83 292 96.74 298 102.57 298 143.15 320.25 192.85 318.25 192.85 322.25 229.12 336.75 238 335.75 270.46 345.75 295.06 343 392.95 356.25 408.67 352.25 495.15 355.25 547.14 355.75 547.14 352.25 648.07 353.25 648.07 349.5 757.63 346.25 924.5 339.5 924.5 403.75 891.02 408.25 788.06 413.25 776.68 405.36 757.12 406 756.36 426.75 690.42 432.25 500.22 416 492.11 428.25 370.88 410.75 354.91 418 271.73 398.75 253.21 403.75 230.64 388 220.5 388.25 194.88 373 143.66 383 85.83 330.25 85.83 292" />
 
@@ -47,7 +50,10 @@
 	<!-- modal -->
 	<div id="dc_upload_modal" class="dc_modal" style="display: none;">
 		<div class="dc_modal-content">
-			<span class="dc_modal_close">&times;</span>
+			<div class="dc_modal-title">
+				<span class="dc_modal_close">&times;</span>
+				<h3></h3>
+				<span>Click on a unit to view details</span></div>
 			<div class="dc_modal-form-wrapper">
 			</div>
 		</div>
@@ -98,9 +104,9 @@
 					<div class="dc_form-element">
 						<select name="price" id="price">
 							<option value="" selected="selected">-select-</option>
-							<option value="1550_1750">$1,550-$1,750</option>
-							<option value="1751_2000">$1,751-$2,000</option>
-							<option value="2001_2500">$2,001-$2,500</option>
+							<option value="1400_1750">$1,400-$1,650</option>
+							<option value="1651_2150">$1,651-$2,150</option>
+							<option value="2001_2500">$2,151-$2,500</option>
 							<option value="2501_3000">$2,501-$3,000</option>
 							<option value="3000plus">3000+</option>
 						</select>
@@ -152,15 +158,15 @@
 				<h4>Additional Features</h4>
 				<div class="dc_form-row dc_form-check">
 					<div class="dc_form-element">
-						<input type="checkbox" name="feature1" id="feature1" value="balcony">
-					</div>
-					<label for="feature1">Balcony</label>
-				</div>
-				<div class="dc_form-row dc_form-check">
-					<div class="dc_form-element">
 						<input type="checkbox" name="feature4" id="feature4" value="terrace">
 					</div>
 					<label for="feature4">Terrace</label>
+				</div>
+				<div class="dc_form-row dc_form-check">
+					<div class="dc_form-element">
+						<input type="checkbox" name="feature1" id="feature1" value="balcony">
+					</div>
+					<label for="feature1">Balcony</label>
 				</div>
 				<div class="dc_form-row dc_form-check">
 					<div class="dc_form-element">
@@ -185,6 +191,9 @@
 		</div>
 		<div class="dc_clear-filter">
 			<a href="" class="dc_btn" id="clear_filter">Clear Filters</a>
+		</div>
+		<div class="dc_restricted" style="">
+			<p>Inquiring about our 10 income-restricted units? <a href="/income-restricted/">Click here.</a></p>
 		</div>
 		<div class="dc_form-footer">
 			<div class="dc_left-col">
