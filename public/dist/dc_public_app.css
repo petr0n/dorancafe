@@ -4307,9 +4307,10 @@ readers do not read off random characters that represent icons */
       color: #a08f6a;
       font-family: Barlow, HelveticaNeue, Helvetica, Arial, sans-serif;
       font-weight: 300;
-      font-size: 3em;
+      font-size: 2.8em;
       letter-spacing: 1px;
       margin-top: 1px;
+      margin-bottom: 0;
       padding-bottom: 30px;
       text-align: left; }
     .dc_wrapper .dc_unit-container .dc_unit-wrapper .dc_left-col .dc_unit--meta {
@@ -4318,6 +4319,12 @@ readers do not read off random characters that represent icons */
         display: inline; }
     .dc_wrapper .dc_unit-container .dc_unit-wrapper .dc_left-col .dc_rent {
       display: block; }
+    .dc_wrapper .dc_unit-container .dc_unit-wrapper .dc_left-col .dc_not-available {
+      border: 2px solid red;
+      color: red;
+      display: inline-block;
+      padding: 5px 10px;
+      margin: 7px 0; }
   .dc_wrapper .dc_unit-container .dc_unit-wrapper .dc_right-col {
     width: 42%; }
     .dc_wrapper .dc_unit-container .dc_unit-wrapper .dc_right-col .dc_link-bar {
@@ -4452,7 +4459,7 @@ readers do not read off random characters that represent icons */
     width: 30%; }
     #dc_search_form .dc_search-results .dc_results .dc_unit .dc_unit-inner {
       padding: 30px; }
-      #dc_search_form .dc_search-results .dc_results .dc_unit .dc_unit-inner .dc_unit--num {
+      #dc_search_form .dc_search-results .dc_results .dc_unit .dc_unit-inner .dc_unit--num, #dc_search_form .dc_search-results .dc_results .dc_unit .dc_unit-inner .dc_unit--name {
         color: #A08F6A;
         text-align: center; }
       #dc_search_form .dc_search-results .dc_results .dc_unit .dc_unit-inner .dc_unit--meta {

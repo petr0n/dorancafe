@@ -107,36 +107,50 @@ class DoranCafe_Public {
 		$dc_page = isset($_GET['dc_page']) ? $_GET['dc_page'] : 1;
 		$offset = $dc_page == 1 ? 0 : ($dc_page - 1) * $display_count; 
 
+
 		if( $search_args ) {
 			$sort_by_arr = array (
-				'price_high' => 'MaximumRent ASC',
-				'price_low'  => 'MaximumRent DESC',
-				'size_high'  => 'SQFT ASC',
-				'size_low'  => 'SQFT DESC'
+				'price_high' => 'MaximumRent DESC',
+				'price_low'  => 'MaximumRent ASC',
+				'size_high'  => 'SQFT DESC',
+				'size_low'  => 'SQFT ASC'
 			);
 
 			$sort_by_args = 'ORDER BY ApartmentName';
 			$args = '';
 
+
 			foreach ( $search_args as $key => $value ) {
 				if ( $value ) {
 					if ( $key == 'sort_by' ) {
-						$sort_by_args = 'ORDER BY ' . $sort_by_arr[$value] . ', ApartmentName ASC';
+						// $sort_by_args = 'ORDER BY ' . $sort_by_arr[$value] . ', ApartmentName ASC';
+						$sort_by_args = 'ORDER BY ' . $sort_by_arr[$value];
+
 					} else if ( $key == 'price' ) {
 						$price_range = explode('_', $value);
 						$args .= '(MaximumRent > ' . $price_range[0] . ' AND MaximumRent < ' . $price_range[1] . ') AND ';
+
 					} else if ( $key == 'availability' ) {
-						$args .= 'AvailableDate < DATE(NOW()) AND ';
-					// } else if ( $key == 'floor' ) {
-					// 	$args .= "ApartmentName LIKE '" . intval($value) . "%' AND ";
+						if ($value == 'available') {
+							$args .= 'TRIM(AvailableDate) != "" AND ';
+						} else if ($value == 'unavailable'){
+							$args .= 'TRIM(AvailableDate) = "" AND ';
+						} else {
+
+						}
+
 					} else if ( $key == 'floorplanname' ) {
 						$args .= "FloorplanName = '" . $value . "' AND ";
+					
 					} else if ( $key == 'unit_view' ) {
 						$args .= "Amenities LIKE '%" . $value . "%' AND ";
+					
 					} else if ( strpos($key, 'feature') !== false ) {
 						$args .= "Amenities LIKE '%" . $value . "%' AND ";
+					
 					} else if ( $key == 'display_count' ) {
 						$display_count_arg = filter_var($value, FILTER_SANITIZE_STRING);
+					
 					} else if ( $key == 'beds' ) {
 						if (is_numeric($value)) {
 							$args .= $key . ' = ' . $value . ' AND ';
@@ -149,16 +163,19 @@ class DoranCafe_Public {
 								$args .= "Amenities LIKE '%Townhome%' AND ";
 							}
 						}
+
 					} else if ( $key == 'baths' ) {
 						$args .= $key . ' = ' . filter_var($value, FILTER_SANITIZE_STRING) . ' AND ';
-					} else if ( $key == 'floor' ) {
+
+					} else if ( $key === 'floor' ) {
 						$floor = '1st';
-						if ($value == 2) {
+						$floorNum = intval($value);
+						if ($floorNum === 2) {
 							$floor = '2nd';
-						} else if ($value == 3) {
+						} else if ($floorNum === 3) {
 							$floor = '3rd';
-						} else if ($value == 4 || $value == 5 || $value == 6) {
-							$floor = filter_var($value, FILTER_SANITIZE_STRING) + 'th';
+						} else if ($floorNum === 4 || $floorNum === 5 || $floorNum === 6) {
+							$floor = $floorNum . 'th';
 						}
 						$args .= 'Amenities LIKE "%' . $floor . ' Floor%" AND ';
 					}
@@ -191,6 +208,7 @@ class DoranCafe_Public {
 
 			//get total counts
 			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name . ' ' . $ct_args;
+			// var_dump($unit_qry);
 			$units_ct = $wpdb->get_var( $unit_ct_qry );
 
 		} else {
@@ -206,6 +224,8 @@ class DoranCafe_Public {
 
 			//get total counts
 			$unit_ct_qry = 'SELECT COUNT(*) FROM ' . $tbl_name . ' WHERE Amenities NOT LIKE "%Income Restricted%"';
+
+			// var_dump($unit_qry);
 			$units_ct = $wpdb->get_var( $unit_ct_qry );
 		}
 		
@@ -231,14 +251,19 @@ class DoranCafe_Public {
 			
 			<a class="dc_unit" href="/unit/<?php echo $unit->ApartmentName; ?>/">
 				<div class="dc_unit-inner">
-					<h3 class="dc_unit--num">Unit # <?php echo $unit->ApartmentName; ?></h3>
+					<h3 class="dc_unit--name">
+						<?php echo $unit->FloorplanName; ?><br>
+					</h3>
+					<h2 class="dc_unit--num">
+						<?php echo $unit->ApartmentName; ?>
+					</h2>
 					<div class="dc_unit--meta">
 						<div class="dc_beds">Beds: <?php echo $unit->Beds; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 						<div class="dc_baths">Baths: <?php echo floatval($unit->Baths); ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 						<div class="dc_sqft">SQFT: <?php echo $unit->SQFT; ?></div>
 					</div>
 					<div class="dc_unit--img">
-						<img src="<?php echo $unit->UnitImageURLs; ?>" alt="<?php echo $unit->ApartmentName; ?>"> 
+						<img src="<?php echo $this->dc_get_unit_image($unit->UnitImageURLs); ?>" alt="<?php echo $unit->ApartmentName; ?>"> 
 					</div>
 				</div>
 				<div class="dc_bottom-bar"></div>
@@ -320,12 +345,28 @@ class DoranCafe_Public {
 	}
 
 
+	public function dc_get_unit_image($imgUrls, $returnFloorplate = false) {
+		$urls = explode(',', $imgUrls);
+		foreach( $urls as $url ) {
+			
+			
+			// var_dump($thisUrl);
+			if (strpos(strtolower($url), 'floorplate') !== false && $returnFloorplate) {
+				return $url;
+			} else if (!$returnFloorplate) {
+				return $url;
+			}
+		}
+		// return $ret;
+	}
+
+
 	public function dc_public_get_custom_units( ) {
 
 		global $wpdb;
 		$tbl_name = $wpdb->prefix . 'dc_aptavail';
 		$unit_qry = 'SELECT * FROM ' . $tbl_name;
-		$unit_qry .= ' WHERE Amenities LIKE "%Income Restricted%" ';
+		$unit_qry .= ' WHERE Amenities LIKE "%Income Restricted%" AND TRIM(AvailableDate) != "" ';
 
 		//var_dump($unit_qry);
 		$units = $wpdb->get_results( $unit_qry, OBJECT );
@@ -364,7 +405,7 @@ class DoranCafe_Public {
 			endforeach; 
 			echo '</div>'; 
 		} else {
-			echo '<h3>No matches found.</h3>';
+			echo '<h3>There are no income restricted units currently available.</h3>';
 		}
 	}
 

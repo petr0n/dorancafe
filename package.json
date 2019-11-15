@@ -10,17 +10,12 @@
         ]
     },
     "browser": {
-      "jquery": "./node_modules/jquery/dist/jquery.js"
-    },
-    "browserify": {
-      "transform": [
-        "browserify-shim"
-      ]
+        "jquery": "./node_modules/jquery/dist/jquery.js"
     },
     "browserify-shim": {
-      "static-jquery": {
-        "exports": "$"
-      }
+        "static-jquery": {
+            "exports": "$"
+        }
     },
     "devDependencies": {
         "browser-sync": "^2.18.13",

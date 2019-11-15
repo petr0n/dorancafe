@@ -78,6 +78,16 @@ require DORANCAFE_PATH . 'includes/dc_class_dorancafe.php';
 // require DORANCAFE_PATH . 'includes/dc_utils.php';
 
 
+/** scheduled task to get data from RentCafe API */
+add_action( 'DoranCafe_getUnitData', 'dc_get_rentcafe_unit_data' );
+function dc_get_rentcafe_unit_data() {
+	$dc_admin = new DoranCafe_API_Services( 'DORANCAFE_PLUGIN', '1.0.0-alpha' );
+	$dc_admin->dc_get_unit_data();
+	wp_mail( 'petron@gmail.com', '[doranaria] Cron Job Run', 'dc_get_unit_data ran successfully');
+}
+
+
+
 
 /**
  * Begins execution of the plugin.

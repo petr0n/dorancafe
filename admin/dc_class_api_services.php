@@ -53,6 +53,7 @@ class DoranCafe_API_Services
 		$this->dc_insert_floorplan_data();
 		*/
 
+
 		$settings = $this->dc_get_settings();
 		if ( $settings[0]->EndpointUrl ) {
 
@@ -165,7 +166,7 @@ class DoranCafe_API_Services
 					"Amenities"				=> $aptavail->Amenities,
 					"AvailableDate"			=> $aptavail->AvailableDate
 				));
-				var_dump("Baths " .floatval($aptavail->Baths));
+				// var_dump("Baths " .floatval($aptavail->Baths));
 			}
 		}
 		// dc_log_me( 'aptavail data inserted' );

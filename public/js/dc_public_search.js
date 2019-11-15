@@ -66,7 +66,7 @@ function dc_set_form_vals(){
 				if ( form_el.attr('type') == 'checkbox' ) {
 					$("input[name='" + key + "']").attr('checked','checked');
 				} else {
-					$("[name='" + key + "']").val(curr_vals[key]);
+					$("[name='" + key + "']").val(decodeURIComponent(curr_vals[key]));
 				}
 			}
 		});

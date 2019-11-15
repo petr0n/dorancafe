@@ -99,6 +99,7 @@
 					</div>
 				</div>
 				
+				<?php /* 
 				<div class="dc_form-row">
 					<label for="price">Price</label>
 					<div class="dc_form-element">
@@ -108,10 +109,11 @@
 							<option value="1651_2150">$1,651-$2,150</option>
 							<option value="2001_2500">$2,151-$2,500</option>
 							<option value="2501_3000">$2,501-$3,000</option>
-							<option value="3000plus">3000+</option>
+							<option value="3000_10000">3000+</option>
 						</select>
 					</div> 
 				</div>
+				*/?>
 			</div>
 
 			<div class="dc_middle-col">
@@ -193,6 +195,9 @@
 			<a href="" class="dc_btn" id="clear_filter">Clear Filters</a>
 		</div>
 		<div class="dc_restricted" style="">
+		<?php /*
+		<p>To be added to the waiting list for our 10 income-restricted units, please email <a href="mailto:leasing@ariaedina.com">leasing@ariaedina.com</a>.</p>
+		*/ ?>
 			<p>Inquiring about our 10 income-restricted units? <a href="/income-restricted/">Click here.</a></p>
 		</div>
 		<div class="dc_form-footer">
@@ -212,10 +217,12 @@
 					<label for="sort_by">Sort By</label>
 					<select name="sort_by" id="sort_by">
 						<option value="" selected="selected">-select-</option>
+						<?php /* 
 						<option value="price_high">Price (highest)</option>
 						<option value="price_low">Price (lowest)</option>
-						<option value="size_high">Size (highest)</option>
-						<option value="size_low">Size (lowest)</option>
+						*/?>
+						<option value="size_high">Size (largest)</option>
+						<option value="size_low">Size (smallest)</option>
 					</select>
 				</div>
 			</div>

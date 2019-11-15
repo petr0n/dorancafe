@@ -7,7 +7,8 @@
 	<div id="data-grid"><?php 
 		$dc_class = new DoranCafe_Admin( 'DORANCAFE_PLUGIN', '1.0.0-alpha' );
 		$units = $dc_class->dc_get_units();
-		if ( $units ) : ?>
+		if ( $units ) : 
+			echo '<p>Total Units: ' . count($units) . '</p>'; ?>
 			<table width="100%" class="unit-grid">
 				<thead>
 					<tr>
