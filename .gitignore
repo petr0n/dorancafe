@@ -32,6 +32,9 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 
+*.code-workspace
+.code-workspace
+
 # ignore log files and databases
 *.log
 *.sql
@@ -42,3 +45,7 @@ Thumbs.db
 
 *.DS_Store
 .DS_Store
+
+**/vendor
+**/_old*
+**/_old
