@@ -18,19 +18,20 @@
 							<div class="dc_baths">Baths: <?php echo $dc_unit[0]['Baths']; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 							<div class="dc_sqft">SQFT: <?php echo $dc_unit[0]['SQFT']; ?></div>
 						</div><?php 
+						 /* 
 						if($dc_unit[0]['AvailableDate'] == ''): ?>
 							<div class="dc_not-available">
 								THIS UNIT IS NO LONGER AVAILABLE
 							</div><?php 
 						else : ?>
-							<?php /* 
+							<?php
 
 							<div class="dc_rent">
 								Monthly Rent: $<?php echo $dc_unit[0]['MaximumRent']; ?>		
 							</div>
-								*/ ?>
+								?>
 							<?php  
-						endif; ?>
+						endif;*/  ?>
 						<hr>
 						<div class="dc_unit-amenities">
 							<ul><?php 
@@ -50,8 +51,8 @@
 					</div>
 					<div class="dc_right-col">
 						<div class="dc_link-bar">
-							<a href="<?php echo $dc_unit[0]['ApplyOnlineURL']; ?>" target="blank"><i class="fas fa-edit"></i> Apply Now</a>
-							<a href="/contact/?avia_11_1=I%20am%20interested%20i%20learning%20more%20about%20Unit%20<?php echo $dc_unit[0]['ApartmentName']; ?>"><i class="fas fa-question-circle"></i> Contact Us</a>
+							<!-- <a href="<?php echo $dc_unit[0]['ApplyOnlineURL']; ?>" target="blank"><i class="fas fa-edit"></i> Apply Now</a> -->
+							<a href="/contact/?avia_11_1=I%20am%20interested%20i%20learning%20more%20about%20Unit%20<?php echo $dc_unit[0]['ApartmentName']; ?>"><i class="fas fa-question-circle"></i> Contact Us for Availability</a>
 							<a target="blank" href="<?php echo $dc_unit[0]['FileName'] ?>" class="dc_btn btn-pdf"><i class="fas fa-print"></i> Print Floor Plan</a>
 						</div>
 						<div class="dc_unit--img">

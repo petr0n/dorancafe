@@ -62,6 +62,7 @@
 	<form action="" class="dc_search-form" id="dc_search_form">
 		<div class="dc_form-wrapper-header">
 			<div class="dc_left-col">
+				<?php /*
 				<div class="dc_form-row">
 					<label for="availability">Availability</label>
 					<div class="dc_form-element">
@@ -72,6 +73,7 @@
 						</select>
 					</div>
 				</div>
+				*/ ?>
 				<div class="dc_form-row">
 					<label for="beds">Bedrooms</label>
 					<div class="dc_form-element">

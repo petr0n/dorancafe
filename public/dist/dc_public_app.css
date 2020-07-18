@@ -4345,8 +4345,8 @@ readers do not read off random characters that represent icons */
         border: 1px solid white;
         background-color: #a08f6a;
         color: white;
-        padding: 3px 0px 5px;
-        width: 32%; }
+        padding: 3px 15px;
+        width: auto; }
         .dc_wrapper .dc_unit-container .dc_unit-wrapper .dc_right-col .dc_link-bar a:hover {
           border: 1px solid #a08f6a;
           background-color: white;
