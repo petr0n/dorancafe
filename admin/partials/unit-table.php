@@ -1,5 +1,11 @@
 <?php 
 
+// function displayImages(img) {
+// 	$imgsString = '';
+// 	foreach( $imgs as $img ) {
+// 		$imgsString .= '<img src"' . $img . '" style="width: 20px;" />'; 
+// 	} 
+// }
 
 ?>
 
@@ -17,6 +23,7 @@
 					<th><span>Baths</span></th>
 					<th><span>SQFT</span></th>
 					<th><span>MaximumRent</span></th>
+					<th><span>Images</span></th>
 					<th><span>Amenities</span></th>
 					<th><span>AvailableDate</span></th>
 					<th><span>PDF</span></th>
@@ -36,6 +43,7 @@
 					echo '<td>' . $unit->Baths . '</td>';
 					echo '<td>' . $unit->SQFT . '</td>';
 					echo '<td>' . $unit->MaximumRent . '</td>';
+					echo '<td><div style="overflow:hidden; width: 100;height: 100px;">' . $dc_class->dc_create_thumbs($unit->UnitImageURLs) . '</div></td>';
 					echo '<td>' . str_replace('^', ', ', $unit->Amenities) . '</td>';
 					echo '<td>' . $unit->AvailableDate . '</td>';
 					echo '<td nowrap>' . $unit_pdf_link . '</td>';

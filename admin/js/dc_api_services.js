@@ -48,8 +48,8 @@ function dc_init() {
 					});					
 				},
 				error : function( data, status ) {
-					// console.log('data.responseText: ' & data.responseText);
-					// console.log('status: ' & status);
+					console.log('data.responseText: ' & data.responseText);
+					console.log('status: ' & status);
 				}
 			});
 		}

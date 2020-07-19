@@ -65,10 +65,10 @@ function dc_create_wp_uploader() {
 	// Uploading files
 	var file_frame;
 	var wp_media_post_id = wp.media.model.settings.post.id; // Store the old id
-	var set_to_post_id = 99999; // Set this
+	var set_to_post_id = 11; // Set this
 	$('#dc_upload_file').on('click', function( event ){
 		// console.log('button clicked'); 
-		event.preventDefault();
+		event.preventDefault(); 
 		// If the media frame already exists, reopen it.
 		if ( file_frame ) {
 			// Set the post ID to what we want

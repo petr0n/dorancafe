@@ -123,10 +123,10 @@ class DoranCafe_Admin {
 
 	public function dc_plugin_init() {
 		$dc_settings = $this->dc_get_settings();
-		if ( $dc_settings[0]->EndpointUrl != '' ) {
+		if ( $dc_settings && $dc_settings[0]->EndpointUrl != '' ) {
 			$this->dc_plugin_settings($dc_settings);
 		} else {
-			$this->dc_plugin_setup($dc_settingsd);
+			$this->dc_plugin_setup($dc_settings);
 		}
 	}
 
@@ -176,32 +176,35 @@ class DoranCafe_Admin {
 			FROM wp_dc_settings
 			LIMIT 1";
 		$settings = $wpdb->get_results( $settings_qry, OBJECT );
-		// var_dump( $units );
+		// var_dump( $settings );
 		return $settings;
 	}
 
 	public function dc_update_settings() {
-		if (isset($_POST['EndpointUrl']) &&
+		if (isset($_POST['EndpointUrls']) &&
 			isset($_POST['FetchDataTime']) &&
 			isset($_POST['SettingId'])) {
+			
+			$url_data = array('urls' => $_POST['EndpointUrls']);
 			global $wpdb;
-			$settings_qry = 'UPDATE wp_dc_settings SET ';  
-			$settings_qry .= 'EndpointUrl = "' . $_POST['EndpointUrl'] . '"';
+			$settings_qry = 'UPDATE wp_dc_settings SET '; 
+			$settings_qry .= "EndpointUrl = '" . json_encode($url_data) . "'";
 			$settings_qry .= ', FetchDataTime = "' . $_POST['FetchDataTime'] . '"';
 			$settings_qry .= ' WHERE SettingId = ' . $_POST['SettingId'];
-			$settings = $wpdb->query( $settings_qry, OBJECT );
+			$wpdb->query( $settings_qry, OBJECT );
 		} else {
 
 		}
 	}
 	public function dc_insert_settings() {
-		if ( isset($_POST['EndpointUrl']) &&
-			isset($_POST['FetchDataTime']) ) {
+		if ( isset($_POST['EndpointUrls']) &&
+		isset($_POST['FetchDataTime']) ) {
+			$url_data = array('urls' => $_POST['EndpointUrls']);
 			global $wpdb;
 			$settings_qry = 'INSERT INTO wp_dc_settings ';  
 			$settings_qry .= '(EndpointUrl, FetchDataTime) ';
-			$settings_qry .= 'VALUES ("' . $_POST['EndpointUrl'] . '","' . $_POST['FetchDataTime'] . '")';
-			$settings = $wpdb->query( $settings_qry, OBJECT );
+			$settings_qry .= "VALUES ('" . json_encode($url_data) . "','" . $_POST["FetchDataTime"] . "')";
+			$wpdb->query( $settings_qry, OBJECT );
 		}
 	}
 	
@@ -239,6 +242,14 @@ class DoranCafe_Admin {
 		$units = $wpdb->get_results( $unit_qry, OBJECT );
 		// var_dump( $units );
 		return $units;
+	}
+
+	public function dc_create_thumbs($dc_images) {
+		$dc_imgs = '';
+		foreach(explode(',', $dc_images) as $img) {
+			$dc_imgs .= '<a target="_blank" href="' . $img .'"><img src="' . $img .'" style="width: 50px;" /></a>';
+		}
+		return $dc_imgs;
 	}
 
 	public function dc_get_units_ajax(){
