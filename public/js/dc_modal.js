@@ -49,7 +49,6 @@ function dc_close_modal() {
 }
 
 
-
 function isFloorplan() {
 	if (localStorage.getItem('dc_floor')) {
 		const path_to_file = '/wp-content/plugins/DoranCafe/public/partials/';
@@ -61,22 +60,6 @@ function isFloorplan() {
 		});
 
 	}
-	// reset storage
-	// $('.av-inner-tab-title').on('click', function() {
-	// 	window.onhashchange = function() {
-	// 		if (window.location.hash === '#search-by-interactive-map' || window.location.hash === '#search-by-feature') {
-	// 			if (localStorage.getItem('dc_floor')) {
-	// 				localStorage.removeItem('dc_floor');
-	// 				localStorage.removeItem('dc_modal_title');
-	// 				if (modal.is(':visible')) {
-	// 					modal.fadeOut('fast', function() {
-	// 						$('.dc_modal-form-wrapper').empty();
-	// 					});
-	// 				}	
-	// 			}
-	// 		}
-	// 	}
-	// });
 }
 
 function saveLocation(dc_floor, dc_title){
