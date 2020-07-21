@@ -6,11 +6,16 @@ $brand-font: Barlow,HelveticaNeue,Helvetica,Arial,sans-serif;
 	}
 	.dc_image-search-wrapper {
 		margin: 0 auto 40px;
-		width: 960px;
+		width: 100%;
+		justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 		svg {
-			height: 540px;
+			margin: 0 auto 50px;
+			height: 350px;
 			position: relative;
-			width: 960px;
+			width: 1000px;
 		}
 		.title {
 			// background-color: rgba(255, 255, 255, 0.7);
@@ -48,14 +53,22 @@ $brand-font: Barlow,HelveticaNeue,Helvetica,Arial,sans-serif;
 			display: flex;
 			justify-content: space-evenly;
 			margin: 0 auto;
-			width: 80%;
+			width: 100%;
 			.dc_left-col, 
 			.dc_middle-col,
 			.dc_right-col {
-				width: 30%;
+				width: 26%;
+				background-color: rgba(240, 240, 240, 1);
+				padding: 10px;
+				
+			}
+			.dc_left-col.narrow {
+				background-color: rgba(217, 214, 214, 1);
+				margin-right: 2%;
+				padding: 10px;
+				width: 18%;
 			}
 			h4 {
-				font-family: inherit;
 				margin-bottom: 10px;
 			}
 		}
@@ -74,12 +87,73 @@ $brand-font: Barlow,HelveticaNeue,Helvetica,Arial,sans-serif;
 		}
 	}
 	.dc_unit-container {
+		.dc_unit-header {
+			background-size: cover;
+			background-position: center;
+			background-image: url(https://birkeminnetonka.com/wp-content/uploads/2020/06/WomanOnCouch.jpg);
+			height: 250px;
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			
+			.header {
+				color: white;
+				font-size: 2.5em;
+				font-family: 'Josefin Sans';
+				line-height: 1;
+				letter-spacing: .005em;
+				margin-bottom: 15px;
+			}
+			.subheader {
+				color: white;
+				font-family: 'Poppins',sans-serif;
+				font-weight: 300;
+				font-size: 1.3em;
+				letter-spacing: -.005em;
+				padding-top: .7em;
+			}
+
+		}
+
 		.back-to-results a {
 			color: #a08f6a;
 		}
 		.dc_unit-wrapper {
+			align-items: center;
 			display: flex;
 			justify-content: space-between;
+			flex-direction: column;
+			.dc_row {
+				align-items: center;
+				display: flex;
+				justify-content: space-between;
+    		margin: 20px 0;
+				padding: 10px;
+				width: 1000px;
+				&.dc_full {
+					justify-content: center;
+					background-color: rgba(165, 133, 83, 1);
+					width: 100%;
+				}
+				.dc_col-third {
+					border: 1px solid #888;
+					height: 80px;
+					padding: 10px;
+					width: 30%;
+				}
+				.dc_col-half {
+					align-items: center;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					width: 40%;
+					&>div {
+						padding: 6px 0;
+					}
+				}
+			}
 			.dc_left-col {
 				width: 42%;
 				h2.dc_page_title {
@@ -172,20 +246,28 @@ $brand-font: Barlow,HelveticaNeue,Helvetica,Arial,sans-serif;
 			color: #a08f6a;
 		}
 		.dc_form-element {
-			width: 60%;
+			width: 85%;
 			input[type="input"],select {
-				border: 1px solid #a08f6a;
-				border-radius: 2px;
-				-webkit-appearance: none;
-				padding: 7px;
+				border: 1px solid #c59d5f;
+				border-radius: 3px;
+				font-size: 1em;
+				padding: 10px;
 				width: 100%;
 			}
 			input[type="checkbox"] {
 				width: auto;
 			}
-			select { // adds arrows
-				margin: 0;
-			}
+			select {
+				&:invalid {
+					color: #aaa;
+				}
+				[disabled] {
+					color: #aaa;
+				}
+				option { 
+					color: #000; 
+				}
+			} 
 		}
 		&.dc_form-check {
 			margin-bottom: 1px;
@@ -315,9 +397,19 @@ i.e-icon {
 		fill: transparent;
 		&.even:hover {
 			fill: rgba(160, 143, 106, .7);
+			.floor-text {
+				display: block;
+			}
 		}
 		&.odd:hover {
 			fill: rgba(125, 181, 176, .7);
+			.floor-text {
+				display: block;
+			}
+		}
+		.floor-text {
+			display: none;
+			opacity: .5;
 		}
 	}
 }

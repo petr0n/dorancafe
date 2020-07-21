@@ -8,8 +8,65 @@
 			$amenities = $dc_unit[0]['Amenities'];
 			$amenities_arr = explode('^', $amenities); ?>
 			<div class="dc_unit-container">
+				<div class="dc_unit-header">
+					<div class="header">
+						UNIT <?php echo $dc_unit[0]['ApartmentName']; ?>
+					</div>
+					<div class="subheader">
+					<?php echo $dc_unit[0]['Beds']; ?> Bedrooms
+					</div>
+				</div>
+				
 				<p class="back-to-results"><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> &laquo; Back to results</a></p>
+
 				<div class="dc_unit-wrapper">
+
+					<div class="dc_row">
+						<div class="dc_col-third">
+							Available
+						</div>
+						<div class="dc_col-third">
+						</div>
+						<div class="dc_col-third">
+							<a href="/contact/?avia_11_1=I%20am%20interested%20i%20learning%20more%20about%20Unit%20<?php echo $dc_unit[0]['ApartmentName']; ?>"><i class="fas fa-question-circle"></i> Contact Us for Availability</a>
+						</div>
+					</div>
+					<div class="dc_row dc_full">
+						<div class="dc_col-half">
+							<div>
+								UNIT NUMBER: <?php echo $dc_unit[0]['ApartmentName']; ?>
+							</div>
+							<div>
+								FLOOR PLAN: <?php echo $dc_unit[0]['FloorplanName']; ?>
+							</div>
+							<div class="dc_beds">
+								BEDS: <?php echo $dc_unit[0]['Beds']; ?>
+							</div>
+							<div class="dc_baths">
+								BATHS: <?php echo $dc_unit[0]['Baths']; ?>
+							</div>
+						</div>
+
+						<div class="dc_col-half">
+							<div class="dc_sqft">
+								INTERIOR SF: <?php echo $dc_unit[0]['SQFT']; ?>
+							</div>
+							<div class="dc_rent">
+								PRICE: Starting at $<?php echo $dc_unit[0]['MaximumRent']; ?>		
+							</div>
+							<div>
+								VIEW: West
+							</div>
+							<div>
+								VIEW: West
+							</div>
+						</div>
+					
+					
+					</div>
+
+					<?php 
+						 /* 
 					<div class="dc_left-col">
 						<h2 class="dc_page_title"><?php echo $dc_unit[0]['FloorplanName']; ?> #<?php echo $dc_unit[0]['ApartmentName']; ?></h2>
 						<!-- <div class="dc_page_sub-title"><?php echo $dc_unit[0]['FloorplanName']; ?></div> -->
@@ -17,8 +74,7 @@
 							<div class="dc_beds">Beds: <?php echo $dc_unit[0]['Beds']; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 							<div class="dc_baths">Baths: <?php echo $dc_unit[0]['Baths']; ?></div>&nbsp;&nbsp;|&nbsp;&nbsp;
 							<div class="dc_sqft">SQFT: <?php echo $dc_unit[0]['SQFT']; ?></div>
-						</div><?php 
-						 /* 
+						</div>
 						if($dc_unit[0]['AvailableDate'] == ''): ?>
 							<div class="dc_not-available">
 								THIS UNIT IS NO LONGER AVAILABLE
@@ -31,7 +87,7 @@
 							</div>
 								?>
 							<?php  
-						endif;*/  ?>
+						endif;
 						<hr>
 						<div class="dc_unit-amenities">
 							<ul><?php 
@@ -61,7 +117,8 @@
 					</div>
 					<div class="dc_bottom-bar"></div>
 				</div>
-			</div><?php 
+			</div><?php */  ?>
+			<?php 
 		else : ?>
 			<div class="dc_unit-container">
 				<h2 class="dc_page_title alert">Unit Not Currently Available</h2>
